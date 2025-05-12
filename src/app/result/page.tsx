@@ -356,6 +356,8 @@ export default function Result() {
   };
 
   const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: true,
     scales: {
       r: {
         angleLines: {
@@ -363,8 +365,22 @@ export default function Result() {
         },
         suggestedMin: 0,
         suggestedMax: 100,
+        ticks: {
+          backdropColor: 'transparent'
+        }
       },
     },
+    plugins: {
+      legend: {
+        position: 'bottom' as const,
+        labels: {
+          boxWidth: 12,
+          font: {
+            size: 11
+          }
+        }
+      }
+    }
   };
 
   return (
@@ -394,19 +410,19 @@ export default function Result() {
             </div>
 
             <div className="mb-12 grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div>
-                <h2 className="text-2xl font-semibold text-gray-700 mb-6">
+              <div className="flex flex-col items-center">
+                <h2 className="text-xl font-semibold text-gray-700 mb-4 self-start">
                   感知与处理维度
                 </h2>
-                <div className="w-full">
+                <div className="w-full max-w-[300px] h-[300px] flex items-center justify-center">
                   <Radar data={mainChartData} options={chartOptions} />
                 </div>
               </div>
-              <div>
-                <h2 className="text-2xl font-semibold text-gray-700 mb-6">
+              <div className="flex flex-col items-center">
+                <h2 className="text-xl font-semibold text-gray-700 mb-4 self-start">
                   环境、思维与时间维度
                 </h2>
-                <div className="w-full">
+                <div className="w-full max-w-[300px] h-[300px] flex items-center justify-center">
                   <Radar data={secondaryChartData} options={chartOptions} />
                 </div>
               </div>
