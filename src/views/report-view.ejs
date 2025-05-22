@@ -1,0 +1,969 @@
+<div class="card shadow-sm mb-4">
+  <div class="card-body p-md-5">
+    <h2 class="text-center mb-4">学习风格诊断报告</h2>
+    
+    <!-- 报告头部信息 -->
+    <div class="row mb-5">
+      <div class="col-md-6">
+        <h5>基本信息</h5>
+        <ul class="list-unstyled">
+          <li><strong>姓名：</strong><%= report.user.name %></li>
+          <li><strong>年龄：</strong><%= report.user.age %> 岁</li>
+          <li><strong>年级：</strong><%= report.user.grade %></li>
+          <li><strong>测评日期：</strong><%= new Date(report.createdAt).toLocaleDateString('zh-CN') %></li>
+        </ul>
+      </div>
+      <div class="col-md-6">
+        <h5>学习风格类型</h5>
+        <div class="d-flex align-items-center">
+          <span class="badge bg-primary p-2 fs-5"><%= report.learningTypeCode %></span>
+          <span class="ms-3"><%= report.isMixedType ? '混合型' : '主导型' %></span>
+        </div>
+        <p class="mt-2"><%= report.learningTypeDescription %></p>
+      </div>
+    </div>
+
+    <!-- 操作按钮 -->
+    <div class="text-end mb-5">
+      <a href="/survey/start" class="btn btn-primary">
+        <i class="fas fa-sync-alt me-2"></i>重新测评
+      </a>
+    </div>
+    
+    <!-- 总体分析图表 -->
+    <div class="report-section">
+      <h3 class="report-heading">学习风格分析</h3>
+      <div class="row g-4">
+        <!-- 感知偏好雷达图 -->
+        <div class="col-lg-6">
+          <div class="card h-100">
+            <div class="card-header bg-light">
+              <h4 class="card-title h5 mb-0">感知偏好</h4>
+            </div>
+            <div class="card-body d-flex flex-column">
+              <!-- 主导类型信息 -->
+              <div class="mb-3 p-3 bg-light rounded">
+                <div class="d-flex align-items-center justify-content-between">
+                  <div><strong>主导类型：</strong></div>
+                  <span class="badge bg-success p-2 px-3"><%= report.dominantType.perceptionType %></span>
+                </div>
+                <div class="mt-2">
+                  <small>
+                    <% if (report.dominantType.perceptionType === '视觉型') { %>
+                      您主要通过视觉获取信息，偏好图表、图像等可视化学习资料。
+                    <% } else if (report.dominantType.perceptionType === '听觉型') { %>
+                      您主要通过听觉获取信息，偏好讲解、讨论等听觉学习方式。
+                    <% } else if (report.dominantType.perceptionType === '动觉型') { %>
+                      您主要通过动手实践获取信息，偏好实验、操作等体验式学习。
+                    <% } %>
+                  </small>
+                </div>
+              </div>
+              
+              <!-- 图表区域 -->
+              <div class="chart-container bg-light rounded p-2" style="position: relative; height: 400px; margin-bottom: 30px;">
+                <canvas id="perceptionChart" 
+                  data-visual="<%= report.scores.perception.visual %>" 
+                  data-auditory="<%= report.scores.perception.auditory %>" 
+                  data-kinesthetic="<%= report.scores.perception.kinesthetic %>">
+                </canvas>
+              </div>
+              
+              <!-- 分隔线 -->
+              <hr class="my-4 w-100" style="border-top: 2px solid #e9ecef; margin-left: auto; margin-right: auto;">
+              
+              <!-- 分数明细 -->
+              <div class="mt-5" style="padding-top: 10px;">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <span>视觉学习型:</span>
+                  <div class="progress flex-grow-1 mx-2" style="height: 8px;">
+                    <div class="progress-bar" role="progressbar" style="width: <%= report.scores.perception.visual %>%;" 
+                      aria-valuenow="<%= report.scores.perception.visual %>" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                  <span class="badge bg-secondary"><%= report.scores.perception.visual %>%</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <span>听觉学习型:</span>
+                  <div class="progress flex-grow-1 mx-2" style="height: 8px;">
+                    <div class="progress-bar" role="progressbar" style="width: <%= report.scores.perception.auditory %>%;" 
+                      aria-valuenow="<%= report.scores.perception.auditory %>" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                  <span class="badge bg-secondary"><%= report.scores.perception.auditory %>%</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                  <span>动觉学习型:</span>
+                  <div class="progress flex-grow-1 mx-2" style="height: 8px;">
+                    <div class="progress-bar" role="progressbar" style="width: <%= report.scores.perception.kinesthetic %>%;" 
+                      aria-valuenow="<%= report.scores.perception.kinesthetic %>" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                  <span class="badge bg-secondary"><%= report.scores.perception.kinesthetic %>%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 其他维度条形图 -->
+        <div class="col-lg-6">
+          <div class="card h-100">
+            <div class="card-header bg-light">
+              <h4 class="card-title h5 mb-0">其他维度分析</h4>
+            </div>
+            <div class="card-body d-flex flex-column">
+              <!-- 各维度主导类型信息 -->
+              <div class="mb-3 p-3 bg-light rounded">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="d-flex align-items-center mb-2">
+                      <div class="me-2"><strong>信息处理:</strong></div>
+                      <span class="badge bg-primary"><%= report.dominantType.processingType %></span>
+                    </div>
+                    <div class="d-flex align-items-center mb-2">
+                      <div class="me-2"><strong>学习环境:</strong></div>
+                      <span class="badge bg-primary"><%= report.dominantType.environmentType %></span>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="d-flex align-items-center mb-2">
+                      <div class="me-2"><strong>思维模式:</strong></div>
+                      <span class="badge bg-primary"><%= report.dominantType.thinkingType %></span>
+                    </div>
+                    <div class="d-flex align-items-center mb-2">
+                      <div class="me-2"><strong>时间管理:</strong></div>
+                      <span class="badge bg-primary"><%= report.dominantType.timeManagementType %></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- 图表区域 -->
+              <div class="chart-container bg-light rounded p-2" style="position: relative; height: 400px; margin-bottom: 30px;">
+                <canvas id="dimensionsChart"
+                  data-systematic="<%= report.scores.processing.systematic %>"
+                  data-global="<%= report.scores.processing.global %>"
+                  data-structured="<%= report.scores.environment.structured %>"
+                  data-flexible="<%= report.scores.environment.flexible %>"
+                  data-analytical="<%= report.scores.thinking.analytical %>"
+                  data-creative="<%= report.scores.thinking.creative %>"
+                  data-planned="<%= report.scores.timeManagement.planned %>"
+                  data-adaptive="<%= report.scores.timeManagement.adaptive %>">
+                </canvas>
+              </div>
+              
+              <!-- 分隔线 -->
+              <hr class="my-4 w-100" style="border-top: 2px solid #e9ecef; margin-left: auto; margin-right: auto;">
+              
+              <!-- 维度特征说明 -->
+              <div class="mt-5" style="padding-top: 10px;">
+                <p class="mb-0 small">
+                  <% if (report.dominantType.processingType === '系统性') { %>
+                    您倾向于按顺序处理信息，注重细节和系统化学习方法。结合
+                  <% } else { %>
+                    您倾向于从整体把握信息，善于建立概念间联系。结合
+                  <% } %>
+                  <% if (report.dominantType.thinkingType === '分析型') { %>
+                    分析型思维，您善于逻辑推理和批判性思考。
+                  <% } else { %>
+                    创造型思维，您善于发散思维和创意生成。
+                  <% } %>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 维度详细分析 -->
+    <div class="report-section">
+      <h3 class="report-heading">维度详细分析</h3>
+      <div class="row g-4">
+        <div class="col-md-6">
+          <div class="card h-100">
+            <div class="card-header bg-light">
+              <h4 class="card-title h5 mb-0">信息处理方式</h4>
+            </div>
+            <div class="card-body">
+              <div class="progress mb-3" style="height: 24px;">
+                <div class="progress-bar" role="progressbar" style="width: <%= report.scores.processing.systematic %>%;" 
+                  aria-valuenow="<%= report.scores.processing.systematic %>" aria-valuemin="0" aria-valuemax="100">
+                  系统性 <%= report.scores.processing.systematic %>%
+                </div>
+                <div class="progress-bar bg-success" role="progressbar" style="width: <%= report.scores.processing.global %>%;" 
+                  aria-valuenow="<%= report.scores.processing.global %>" aria-valuemin="0" aria-valuemax="100">
+                  跳跃性 <%= report.scores.processing.global %>%
+                </div>
+              </div>
+              <p>主导类型：<strong><%= report.dominantType.processingType %></strong></p>
+              <p><%= report.dominantType.processingType === '系统性' ? 
+                '您倾向于按照逻辑顺序处理信息，注重细节和系统化学习。' : 
+                '您倾向于从整体把握信息，善于在不同概念间建立联系。' %></p>
+              
+              <!-- AI家长建议按钮 -->
+              <button class="btn btn-sm btn-outline-primary mt-2 show-parent-advice" data-dimension="processing">
+                <i class="fas fa-lightbulb me-1"></i>使用 AI 生成家长建议
+              </button>
+              
+              <!-- 家长建议内容(默认隐藏) -->
+              <div class="parent-advice-content processing-advice mt-3" style="display: none;">
+                <div class="p-3 bg-light rounded">
+                  <h6 class="mb-2"><i class="fas fa-user-graduate text-primary me-2"></i>培养建议</h6>
+                  <p class="advice-cultivation small"></p>
+                  
+                  <h6 class="mb-2"><i class="fas fa-book text-primary me-2"></i>学习建议</h6>
+                  <p class="advice-learning small"></p>
+                  
+                  <h6 class="mb-2"><i class="fas fa-home text-primary me-2"></i>家庭活动建议</h6>
+                  <p class="advice-activities small"></p>
+                  
+                  <h6 class="mb-2"><i class="fas fa-heart text-primary me-2"></i>家庭关系建议</h6>
+                  <p class="advice-relationship small"></p>
+                  
+                  <h6 class="mb-2"><i class="fas fa-comments text-primary me-2"></i>沟通建议</h6>
+                  <p class="advice-communication small"></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-md-6">
+          <div class="card h-100">
+            <div class="card-header bg-light">
+              <h4 class="card-title h5 mb-0">学习环境偏好</h4>
+            </div>
+            <div class="card-body">
+              <div class="progress mb-3" style="height: 24px;">
+                <div class="progress-bar" role="progressbar" style="width: <%= report.scores.environment.structured %>%;" 
+                  aria-valuenow="<%= report.scores.environment.structured %>" aria-valuemin="0" aria-valuemax="100">
+                  结构化 <%= report.scores.environment.structured %>%
+                </div>
+                <div class="progress-bar bg-success" role="progressbar" style="width: <%= report.scores.environment.flexible %>%;" 
+                  aria-valuenow="<%= report.scores.environment.flexible %>" aria-valuemin="0" aria-valuemax="100">
+                  灵活型 <%= report.scores.environment.flexible %>%
+                </div>
+              </div>
+              <p>主导类型：<strong><%= report.dominantType.environmentType %></strong></p>
+              <p><%= report.dominantType.environmentType === '结构化' ? 
+                '您在安静、有序的学习环境中表现最佳，需要明确的规则和期望。' : 
+                '您适应多种学习环境，可以在不同条件下有效学习。' %></p>
+              
+              <!-- AI家长建议按钮 -->
+              <button class="btn btn-sm btn-outline-primary mt-2 show-parent-advice" data-dimension="environment">
+                <i class="fas fa-lightbulb me-1"></i>使用 AI 生成家长建议
+              </button>
+              
+              <!-- 家长建议内容(默认隐藏) -->
+              <div class="parent-advice-content environment-advice mt-3" style="display: none;">
+                <div class="p-3 bg-light rounded">
+                  <h6 class="mb-2"><i class="fas fa-user-graduate text-primary me-2"></i>培养建议</h6>
+                  <p class="advice-cultivation small"></p>
+                  
+                  <h6 class="mb-2"><i class="fas fa-book text-primary me-2"></i>学习建议</h6>
+                  <p class="advice-learning small"></p>
+                  
+                  <h6 class="mb-2"><i class="fas fa-home text-primary me-2"></i>家庭活动建议</h6>
+                  <p class="advice-activities small"></p>
+                  
+                  <h6 class="mb-2"><i class="fas fa-heart text-primary me-2"></i>家庭关系建议</h6>
+                  <p class="advice-relationship small"></p>
+                  
+                  <h6 class="mb-2"><i class="fas fa-comments text-primary me-2"></i>沟通建议</h6>
+                  <p class="advice-communication small"></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-md-6">
+          <div class="card h-100">
+            <div class="card-header bg-light">
+              <h4 class="card-title h5 mb-0">思维模式</h4>
+            </div>
+            <div class="card-body">
+              <div class="progress mb-3" style="height: 24px;">
+                <div class="progress-bar" role="progressbar" style="width: <%= report.scores.thinking.analytical %>%;" 
+                  aria-valuenow="<%= report.scores.thinking.analytical %>" aria-valuemin="0" aria-valuemax="100">
+                  分析型 <%= report.scores.thinking.analytical %>%
+                </div>
+                <div class="progress-bar bg-success" role="progressbar" style="width: <%= report.scores.thinking.creative %>%;" 
+                  aria-valuenow="<%= report.scores.thinking.creative %>" aria-valuemin="0" aria-valuemax="100">
+                  创造型 <%= report.scores.thinking.creative %>%
+                </div>
+              </div>
+              <p>主导类型：<strong><%= report.dominantType.thinkingType %></strong></p>
+              <p><%= report.dominantType.thinkingType === '分析型' ? 
+                '您善于逻辑分析和批判性思考，注重效率和准确性。' : 
+                '您善于发散思维和创意生成，喜欢开放性问题和多种可能性。' %></p>
+              
+              <!-- AI家长建议按钮 -->
+              <button class="btn btn-sm btn-outline-primary mt-2 show-parent-advice" data-dimension="thinking">
+                <i class="fas fa-lightbulb me-1"></i>使用 AI 生成家长建议
+              </button>
+              
+              <!-- 家长建议内容(默认隐藏) -->
+              <div class="parent-advice-content thinking-advice mt-3" style="display: none;">
+                <div class="p-3 bg-light rounded">
+                  <h6 class="mb-2"><i class="fas fa-user-graduate text-primary me-2"></i>培养建议</h6>
+                  <p class="advice-cultivation small"></p>
+                  
+                  <h6 class="mb-2"><i class="fas fa-book text-primary me-2"></i>学习建议</h6>
+                  <p class="advice-learning small"></p>
+                  
+                  <h6 class="mb-2"><i class="fas fa-home text-primary me-2"></i>家庭活动建议</h6>
+                  <p class="advice-activities small"></p>
+                  
+                  <h6 class="mb-2"><i class="fas fa-heart text-primary me-2"></i>家庭关系建议</h6>
+                  <p class="advice-relationship small"></p>
+                  
+                  <h6 class="mb-2"><i class="fas fa-comments text-primary me-2"></i>沟通建议</h6>
+                  <p class="advice-communication small"></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-md-6">
+          <div class="card h-100">
+            <div class="card-header bg-light">
+              <h4 class="card-title h5 mb-0">时间管理倾向</h4>
+            </div>
+            <div class="card-body">
+              <div class="progress mb-3" style="height: 24px;">
+                <div class="progress-bar" role="progressbar" style="width: <%= report.scores.timeManagement.planned %>%;" 
+                  aria-valuenow="<%= report.scores.timeManagement.planned %>" aria-valuemin="0" aria-valuemax="100">
+                  计划型 <%= report.scores.timeManagement.planned %>%
+                </div>
+                <div class="progress-bar bg-success" role="progressbar" style="width: <%= report.scores.timeManagement.adaptive %>%;" 
+                  aria-valuenow="<%= report.scores.timeManagement.adaptive %>" aria-valuemin="0" aria-valuemax="100">
+                  适应型 <%= report.scores.timeManagement.adaptive %>%
+                </div>
+              </div>
+              <p>主导类型：<strong><%= report.dominantType.timeManagementType %></strong></p>
+              <p><%= report.dominantType.timeManagementType === '计划型' ? 
+                '您喜欢制定详细计划并按计划执行，有条理且善于管理截止日期。' : 
+                '您灵活应对不同任务和时间需求，善于即兴应变和调整。' %></p>
+              
+              <!-- AI家长建议按钮 -->
+              <button class="btn btn-sm btn-outline-primary mt-2 show-parent-advice" data-dimension="timeManagement">
+                <i class="fas fa-lightbulb me-1"></i>使用 AI 生成家长建议
+              </button>
+              
+              <!-- 家长建议内容(默认隐藏) -->
+              <div class="parent-advice-content timeManagement-advice mt-3" style="display: none;">
+                <div class="p-3 bg-light rounded">
+                  <h6 class="mb-2"><i class="fas fa-user-graduate text-primary me-2"></i>培养建议</h6>
+                  <p class="advice-cultivation small"></p>
+                  
+                  <h6 class="mb-2"><i class="fas fa-book text-primary me-2"></i>学习建议</h6>
+                  <p class="advice-learning small"></p>
+                  
+                  <h6 class="mb-2"><i class="fas fa-home text-primary me-2"></i>家庭活动建议</h6>
+                  <p class="advice-activities small"></p>
+                  
+                  <h6 class="mb-2"><i class="fas fa-heart text-primary me-2"></i>家庭关系建议</h6>
+                  <p class="advice-relationship small"></p>
+                  
+                  <h6 class="mb-2"><i class="fas fa-comments text-primary me-2"></i>沟通建议</h6>
+                  <p class="advice-communication small"></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 感知偏好也添加AI家长建议按钮和内容框 -->
+        <div class="col-md-12 mt-3">
+          <div class="card h-100">
+            <div class="card-header bg-light">
+              <h4 class="card-title h5 mb-0">感知偏好家长建议</h4>
+            </div>
+            <div class="card-body">
+              <p>您的孩子主导感知类型：<strong><%= report.dominantType.perceptionType %></strong></p>
+              <p><%= report.dominantType.perceptionType === '视觉型' ? 
+                '孩子主要通过视觉获取信息，偏好图表、图像等可视化学习资料。' : 
+                report.dominantType.perceptionType === '听觉型' ? 
+                '孩子主要通过听觉获取信息，偏好讲解、讨论等听觉学习方式。' : 
+                '孩子主要通过动手实践获取信息，偏好实验、操作等体验式学习。' %></p>
+              
+              <!-- AI家长建议按钮 -->
+              <button class="btn btn-sm btn-outline-primary mt-2 show-parent-advice" data-dimension="perception">
+                <i class="fas fa-lightbulb me-1"></i>使用 AI 生成家长建议
+              </button>
+              
+              <!-- 家长建议内容(默认隐藏) -->
+              <div class="parent-advice-content perception-advice mt-3" style="display: none;">
+                <div class="p-3 bg-light rounded">
+                  <h6 class="mb-2"><i class="fas fa-user-graduate text-primary me-2"></i>培养建议</h6>
+                  <p class="advice-cultivation small"></p>
+                  
+                  <h6 class="mb-2"><i class="fas fa-book text-primary me-2"></i>学习建议</h6>
+                  <p class="advice-learning small"></p>
+                  
+                  <h6 class="mb-2"><i class="fas fa-home text-primary me-2"></i>家庭活动建议</h6>
+                  <p class="advice-activities small"></p>
+                  
+                  <h6 class="mb-2"><i class="fas fa-heart text-primary me-2"></i>家庭关系建议</h6>
+                  <p class="advice-relationship small"></p>
+                  
+                  <h6 class="mb-2"><i class="fas fa-comments text-primary me-2"></i>沟通建议</h6>
+                  <p class="advice-communication small"></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 优势与挑战 -->
+    <div class="report-section">
+      <h3 class="report-heading">优势与挑战</h3>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="card h-100">
+            <div class="card-header bg-light">
+              <h4 class="card-title h5 mb-0"><i class="fas fa-star text-warning me-2"></i>学习优势</h4>
+            </div>
+            <div class="card-body">
+              <ul class="list-unstyled">
+                <% report.strengths.forEach(strength => { %>
+                  <li class="strength-item mb-2"><%= strength %></li>
+                <% }); %>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card h-100">
+            <div class="card-header bg-light">
+              <h4 class="card-title h5 mb-0"><i class="fas fa-exclamation-triangle text-warning me-2"></i>学习挑战</h4>
+            </div>
+            <div class="card-body">
+              <ul class="list-unstyled">
+                <% report.challenges.forEach(challenge => { %>
+                  <li class="challenge-item mb-2"><%= challenge %></li>
+                <% }); %>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 学习策略推荐 -->
+    <div class="report-section">
+      <h3 class="report-heading">个性化学习策略</h3>
+      
+      <!-- 通用学习策略 -->
+      <div class="card mb-4">
+        <div class="card-header bg-light">
+          <h4 class="card-title h5 mb-0">通用学习策略</h4>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-lg-6">
+              <ul class="list-unstyled">
+                <% report.strategies.slice(0, Math.ceil(report.strategies.length / 2)).forEach(strategy => { %>
+                  <li class="strategy-item mb-2"><%= strategy %></li>
+                <% }); %>
+              </ul>
+            </div>
+            <div class="col-lg-6">
+              <ul class="list-unstyled">
+                <% report.strategies.slice(Math.ceil(report.strategies.length / 2)).forEach(strategy => { %>
+                  <li class="strategy-item mb-2"><%= strategy %></li>
+                <% }); %>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 学科特定策略 -->
+      <div class="card">
+        <div class="card-header bg-light">
+          <h4 class="card-title h5 mb-0">学科特定策略</h4>
+        </div>
+        <div class="card-body">
+          <div class="row g-4">
+            <div class="col-md-6">
+              <h5><i class="fas fa-calculator text-primary me-2"></i>数学学习</h5>
+              <ul class="list-unstyled">
+                <% report.subjectStrategies.math.forEach(strategy => { %>
+                  <li class="strategy-item mb-2"><%= strategy %></li>
+                <% }); %>
+              </ul>
+            </div>
+            <div class="col-md-6">
+              <h5><i class="fas fa-book text-primary me-2"></i>语文学习</h5>
+              <ul class="list-unstyled">
+                <% report.subjectStrategies.language.forEach(strategy => { %>
+                  <li class="strategy-item mb-2"><%= strategy %></li>
+                <% }); %>
+              </ul>
+            </div>
+            <div class="col-md-6">
+              <h5><i class="fas fa-globe text-primary me-2"></i>英语学习</h5>
+              <ul class="list-unstyled">
+                <% report.subjectStrategies.english.forEach(strategy => { %>
+                  <li class="strategy-item mb-2"><%= strategy %></li>
+                <% }); %>
+              </ul>
+            </div>
+            <div class="col-md-6">
+              <h5><i class="fas fa-flask text-primary me-2"></i>科学学习</h5>
+              <ul class="list-unstyled">
+                <% report.subjectStrategies.science.forEach(strategy => { %>
+                  <li class="strategy-item mb-2"><%= strategy %></li>
+                <% }); %>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 后续行动 -->
+    <div class="report-section">
+      <h3 class="report-heading">后续行动建议</h3>
+      <div class="card">
+        <div class="card-body">
+          <div class="row g-4">
+            <div class="col-md-4">
+              <div class="card h-100 border-0 bg-light">
+                <div class="card-body">
+                  <h5 class="card-title"><i class="fas fa-bolt text-warning me-2"></i>立即行动</h5>
+                  <p class="card-text">选择2-3个符合您学习风格的策略，在未来一周内尝试应用到日常学习中。</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card h-100 border-0 bg-light">
+                <div class="card-body">
+                  <h5 class="card-title"><i class="fas fa-calendar-alt text-info me-2"></i>近期计划</h5>
+                  <p class="card-text">在未来一个月内，逐步应用更多学习策略，并记录效果，保留有效方法。</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card h-100 border-0 bg-light">
+                <div class="card-body">
+                  <h5 class="card-title"><i class="fas fa-chart-line text-success me-2"></i>长期发展</h5>
+                  <p class="card-text">每学期进行一次重新测评，追踪学习风格变化，持续优化学习方法。</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 分享报告 -->
+    <div class="text-center mt-5">
+        <button type="button" class="btn btn-outline-primary">
+          <i class="fas fa-share-alt me-2"></i>分享报告
+        </button>
+    </div>
+
+    <!-- AI建议部分 -->
+    <div class="report-section mt-5">
+      <h3 class="report-heading">AI家长建议
+        <div class="btn-group ms-2">
+          <button id="generateAllAdviceBtn" class="btn btn-primary btn-sm">
+            <i class="fas fa-magic me-1"></i> 一键生成所有建议
+          </button>
+          <button id="generateAdviceBtn" class="btn btn-outline-primary btn-sm">
+            <i class="fas fa-sync-alt"></i> 重新生成
+          </button>
+        </div>
+      </h3>
+      
+      <div id="adviceError" class="alert alert-danger d-none">
+        <i class="fas fa-exclamation-circle"></i>
+        <span id="errorMessage">生成建议时出错</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+
+      <div id="adviceLoading" class="text-center d-none">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">正在生成建议...</span>
+        </div>
+        <p class="mt-2">正在生成个性化建议，请稍候...</p>
+      </div>
+
+      <div id="adviceContent">
+        <!-- 建议内容将通过JavaScript动态加载 -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // 显示加载状态
+    function showLoadingState(button, container) {
+      if (button) {
+        button.disabled = true;
+        button.classList.add('loading');
+        button.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>正在生成...';
+      }
+      if (container) {
+        container.innerHTML = `
+          <div class="text-center p-3">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">正在加载...</span>
+            </div>
+            <p class="mt-2">正在生成个性化建议，请稍候...</p>
+          </div>
+        `;
+        container.style.display = 'block';
+      }
+    }
+
+    // 生成并显示建议的函数
+    async function generateAndDisplayAdvice() {
+      const adviceContent = document.getElementById('adviceContent');
+      const loadingElement = document.getElementById('adviceLoading');
+      const errorElement = document.getElementById('adviceError');
+      
+      try {
+        // 显示加载状态
+        errorElement.classList.add('d-none');
+        loadingElement.classList.remove('d-none');
+        adviceContent.innerHTML = '';
+        
+        // 获取建议数据
+        const response = await fetch(`/report/view/${reportId}/parent-advice`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        if (!data.success) {
+          throw new Error(data.message || '获取建议失败');
+        }
+        
+        // 更新全局建议数据
+        parentAdvice = data.data;
+        
+        // 显示所有维度的建议
+        const dimensions = ['perception', 'processing', 'environment', 'thinking', 'timeManagement'];
+        dimensions.forEach(dimension => {
+          const adviceContainer = document.querySelector(`.${dimension}-advice`);
+          if (adviceContainer) {
+            displayAdvice(dimension);
+          }
+        });
+        
+      } catch (error) {
+        console.error('生成建议时出错:', error);
+        errorElement.classList.remove('d-none');
+        document.getElementById('errorMessage').textContent = error.message || '生成建议时出错，请稍后重试';
+      } finally {
+        loadingElement.classList.add('d-none');
+      }
+    }
+
+    // 销毁已存在的图表实例
+    function destroyChart(chartId) {
+      const canvas = document.getElementById(chartId);
+      if (canvas) {
+        const ctx = canvas.getContext('2d');
+        const existingChart = Chart.getChart(canvas);
+        if (existingChart) {
+          existingChart.destroy();
+        }
+      }
+    }
+
+    // 感知偏好雷达图
+    const perceptionChartEl = document.getElementById('perceptionChart');
+    if (perceptionChartEl) {
+      // 销毁已存在实例
+      destroyChart('perceptionChart');
+      
+      const perceptionCtx = perceptionChartEl.getContext('2d');
+      new Chart(perceptionCtx, {
+        type: 'radar',
+        data: {
+          labels: ['视觉型', '听觉型', '动觉型'],
+          datasets: [{
+            label: '感知偏好百分比',
+            data: [
+              perceptionChartEl.dataset.visual || 0,
+              perceptionChartEl.dataset.auditory || 0,
+              perceptionChartEl.dataset.kinesthetic || 0
+            ],
+            backgroundColor: 'rgba(78, 115, 223, 0.2)',
+            borderColor: 'rgba(78, 115, 223, 1)',
+            pointBackgroundColor: 'rgba(78, 115, 223, 1)',
+            pointBorderColor: '#fff',
+            pointHoverBackgroundColor: '#fff',
+            pointHoverBorderColor: 'rgba(78, 115, 223, 1)'
+          }]
+        },
+        options: {
+          scales: {
+            r: {
+              angleLines: {
+                display: true
+              },
+              suggestedMin: 0,
+              suggestedMax: 100
+            }
+          }
+        }
+      });
+    }
+    
+    // 其他维度图表
+    const dimensionsChartEl = document.getElementById('dimensionsChart');
+    if (dimensionsChartEl) {
+      // 销毁已存在实例
+      destroyChart('dimensionsChart');
+      
+      const dimensionsCtx = dimensionsChartEl.getContext('2d');
+      new Chart(dimensionsCtx, {
+        type: 'bar',
+        data: {
+          labels: ['信息处理', '学习环境', '思维模式', '时间管理'],
+          datasets: [{
+            label: '第一类型',
+            data: [
+              dimensionsChartEl.dataset.systematic || 0,
+              dimensionsChartEl.dataset.structured || 0,
+              dimensionsChartEl.dataset.analytical || 0,
+              dimensionsChartEl.dataset.planned || 0
+            ],
+            backgroundColor: 'rgba(78, 115, 223, 0.8)'
+          }, {
+            label: '第二类型',
+            data: [
+              dimensionsChartEl.dataset.global || 0,
+              dimensionsChartEl.dataset.flexible || 0,
+              dimensionsChartEl.dataset.creative || 0,
+              dimensionsChartEl.dataset.adaptive || 0
+            ],
+            backgroundColor: 'rgba(28, 200, 138, 0.8)'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true,
+              max: 100
+            }
+          }
+        }
+      });
+    }
+
+    // AI家长建议功能
+    const reportId = '<%= report._id %>';
+    let parentAdvice = null;
+    
+    // 显示/隐藏家长建议按钮点击事件
+    document.querySelectorAll('.show-parent-advice').forEach(button => {
+      button.addEventListener('click', async function() {
+        const dimension = this.dataset.dimension;
+        const adviceContainer = document.querySelector(`.${dimension}-advice`);
+        
+        if (!parentAdvice) {
+          try {
+            // 显示加载状态
+            showLoadingState(this, adviceContainer);
+            
+            const response = await fetch(`/report/view/${reportId}/parent-advice`);
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            if (!data.success) {
+              throw new Error(data.message || '获取建议失败');
+            }
+            
+            parentAdvice = data.data;
+            await displayAdvice(dimension);
+            
+          } catch (error) {
+            console.error('获取家长建议出错:', error);
+            showErrorState(adviceContainer, error.message);
+          } finally {
+            resetButtons();
+          }
+        } else {
+          // 已加载建议时的切换逻辑
+          toggleAdviceDisplay(dimension, adviceContainer, this);
+        }
+      });
+    });
+
+    // 显示指定维度的建议
+    function displayAdvice(dimension) {
+      if (!parentAdvice) {
+        console.error('parentAdvice对象为空');
+        return;
+      }
+
+      // 维度映射
+      const dimensionMapping = {
+        perception: "感知偏好",
+        processing: "信息处理方式",
+        environment: "学习环境偏好",
+        thinking: "思维模式",
+        timeManagement: "时间管理倾向"
+      };
+
+      const dimensionKey = dimensionMapping[dimension];
+      if (!dimensionKey || !parentAdvice[dimensionKey]) {
+        console.error(`未找到${dimension}维度的建议数据`);
+        return;
+      }
+
+      const advice = parentAdvice[dimensionKey];
+      const adviceContainer = document.querySelector(`.${dimension}-advice`);
+      const button = document.querySelector(`.show-parent-advice[data-dimension="${dimension}"]`);
+
+      try {
+        if (!adviceContainer) {
+          throw new Error(`未找到建议容器: ${dimension}-advice`);
+        }
+
+        // 构建建议内容HTML
+        let adviceHTML = '<div class="p-3 bg-light rounded">';
+
+        // 添加建议内容
+        const fields = [
+          { key: '培养建议', class: 'cultivation', icon: 'fas fa-user-graduate' },
+          { key: '学习建议', class: 'learning', icon: 'fas fa-book' },
+          { key: '家庭活动建议', class: 'activities', icon: 'fas fa-home' },
+          { key: '家庭关系建议', class: 'relationship', icon: 'fas fa-heart' },
+          { key: '沟通建议', class: 'communication', icon: 'fas fa-comments' }
+        ];
+
+        fields.forEach(field => {
+          const content = advice[field.key] || '暂无建议';
+          adviceHTML += `
+            <div class="mb-3">
+              <h6 class="mb-2"><i class="${field.icon} text-primary me-2"></i>${field.key}</h6>
+              <p class="advice-${field.class} small mb-0">${content}</p>
+            </div>
+          `;
+        });
+
+        adviceHTML += '</div>';
+        adviceContainer.innerHTML = adviceHTML;
+        adviceContainer.style.display = 'block';
+
+        if (button) {
+          button.innerHTML = '<i class="fas fa-times me-1"></i>隐藏家长建议';
+        }
+
+      } catch (error) {
+        console.error(`显示${dimension}维度建议时出错:`, error);
+        showErrorState(adviceContainer, '显示建议内容时出错，请刷新页面重试');
+      }
+    }
+
+    // 显示错误状态
+    function showErrorState(container, message) {
+      if (container) {
+        container.innerHTML = `
+          <div class="alert alert-danger" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i>
+            ${message}
+            <button type="button" class="btn-close float-end" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        `;
+      }
+    }
+
+    // 切换建议显示状态
+    function toggleAdviceDisplay(dimension, container, button) {
+      if (container.style.display === 'none') {
+        displayAdvice(dimension);
+      } else {
+        container.style.display = 'none';
+        button.innerHTML = '<i class="fas fa-lightbulb me-1"></i>使用 AI 生成家长建议';
+      }
+    }
+    
+    // 重置所有按钮状态
+    function resetButtons() {
+      document.querySelectorAll('.show-parent-advice').forEach(btn => {
+        if (!btn.classList.contains('loading')) {
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fas fa-lightbulb me-1"></i>使用 AI 生成家长建议';
+        }
+      });
+    }
+
+    // 一键生成所有建议
+    async function generateAllAdvice() {
+      const dimensions = ['perception', 'processing', 'environment', 'thinking', 'timeManagement'];
+      const generateAllBtn = document.getElementById('generateAllAdviceBtn');
+      const adviceButtons = document.querySelectorAll('.show-parent-advice');
+      
+      try {
+        // 显示所有按钮的加载状态
+        generateAllBtn.disabled = true;
+        generateAllBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>正在生成所有建议...';
+        adviceButtons.forEach(btn => {
+          btn.disabled = true;
+          btn.classList.add('loading');
+        });
+        
+        // 获取建议数据
+        const response = await fetch(`/report/view/${reportId}/parent-advice`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        if (!data.success) {
+          throw new Error(data.message || '获取建议失败');
+        }
+        
+        // 更新全局建议数据
+        parentAdvice = data.data;
+        
+        // 显示所有维度的建议
+        dimensions.forEach(dimension => {
+          const adviceContainer = document.querySelector(`.${dimension}-advice`);
+          if (adviceContainer) {
+            displayAdvice(dimension);
+          }
+        });
+        
+      } catch (error) {
+        console.error('生成建议时出错:', error);
+        const errorElement = document.getElementById('adviceError');
+        errorElement.classList.remove('d-none');
+        document.getElementById('errorMessage').textContent = error.message || '生成建议时出错，请稍后重试';
+      } finally {
+        // 恢复按钮状态
+        generateAllBtn.disabled = false;
+        generateAllBtn.innerHTML = '<i class="fas fa-magic me-1"></i> 一键生成所有建议';
+        adviceButtons.forEach(btn => {
+          if (!btn.classList.contains('active')) {
+            btn.disabled = false;
+            btn.classList.remove('loading');
+            btn.innerHTML = '<i class="fas fa-lightbulb me-1"></i>使用 AI 生成家长建议';
+          }
+        });
+      }
+    }
+
+    // 添加一键生成按钮事件监听
+    document.getElementById('generateAllAdviceBtn').addEventListener('click', generateAllAdvice);
+
+    // 重新生成按钮点击事件
+    document.getElementById('generateAdviceBtn').addEventListener('click', generateAndDisplayAdvice);
+  });
+</script> 

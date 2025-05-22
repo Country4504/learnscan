@@ -1,0 +1,151 @@
+<section class="hero-section text-center py-5">
+  <div class="container">
+    <h1 class="display-4 fw-bold">LearnScan</h1>
+    <p class="lead mb-4">发现你的学习超能力</p>
+    <p class="fs-5 mb-5">面向10-16岁青少年的科学化学习风格诊断与学习方法提升系统</p>
+    
+    <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+      <% if (user) { %>
+        <a href="/survey/start" class="btn btn-primary btn-lg px-4 gap-3">开始测评</a>
+        <a href="/report/history" class="btn btn-outline-secondary btn-lg px-4">查看报告</a>
+      <% } else { %>
+        <a href="/user/register" class="btn btn-primary btn-lg px-4 gap-3">立即注册</a>
+        <a href="/user/login" class="btn btn-outline-secondary btn-lg px-4">用户登录</a>
+      <% } %>
+    </div>
+  </div>
+</section>
+
+<section class="py-5 bg-light">
+  <div class="container">
+    <div class="row g-4 py-3">
+      <div class="col-md-3">
+        <div class="card h-100 shadow-sm">
+          <div class="card-body text-center">
+            <i class="fas fa-brain fs-1 text-primary mb-3"></i>
+            <h3 class="card-title h5">发现学习风格</h3>
+            <p class="card-text">基于科学测评，发现你独特的学习优势和特点</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card h-100 shadow-sm">
+          <div class="card-body text-center">
+            <i class="fas fa-lightbulb fs-1 text-primary mb-3"></i>
+            <h3 class="card-title h5">获取个性化建议</h3>
+            <p class="card-text">专属学习策略，让学习更高效、更有趣</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card h-100 shadow-sm">
+          <div class="card-body text-center">
+            <i class="fas fa-chart-line fs-1 text-primary mb-3"></i>
+            <h3 class="card-title h5">提升学习效率</h3>
+            <p class="card-text">针对性优化学习方法，提高学习成绩和体验</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card h-100 shadow-sm">
+          <div class="card-body text-center">
+            <i class="fas fa-user-graduate fs-1 text-primary mb-3"></i>
+            <h3 class="card-title h5">培养学习能力</h3>
+            <p class="card-text">培养自我认知和终身学习的核心能力</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-5">
+  <div class="container">
+    <h2 class="text-center mb-5">LearnScan 如何帮助你</h2>
+    <div class="row align-items-center g-5">
+      <div class="col-md-6">
+        <h3>科学测评</h3>
+        <p>基于教育心理学和认知科学研究，我们设计了专为10-16岁青少年定制的学习风格测评问卷，全面评估感知偏好、信息处理方式、学习环境偏好、思维模式和时间管理倾向五大维度。</p>
+        <h3>个性化报告</h3>
+        <p>测评完成后，系统自动生成详细的个性化诊断报告，包含学习风格分析、优势和挑战、个性化学习策略以及针对不同学科的具体方法建议。</p>
+        <h3>实用导向</h3>
+        <p>我们注重提供可执行的实用建议，无论是课堂学习、家庭作业还是考试准备，都能找到适合你的学习方法和技巧。</p>
+      </div>
+      <div class="col-md-6">
+        <div class="image-container learning-illustration">
+        <img src="/images/learning-illustration.png" alt="学习测评插图" class="img-fluid rounded shadow">
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-5 bg-light">
+  <div class="container">
+    <h2 class="text-center mb-5">用户评价</h2>
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <div class="d-flex mb-3">
+              <div class="text-warning">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+              </div>
+            </div>
+            <p class="card-text">"测评非常准确地指出了我适合通过图像学习的特点，按照报告建议使用思维导图学习后，记忆效果提升了很多！"</p>
+            <p class="small text-muted">- 李明，14岁</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <div class="d-flex mb-3">
+              <div class="text-warning">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+              </div>
+            </div>
+            <p class="card-text">"作为家长，这个测评帮助我更好地理解孩子的学习方式，不再盲目要求她按我的方法学习，亲子关系也改善了。"</p>
+            <p class="small text-muted">- 张女士，家长</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <div class="d-flex mb-3">
+              <div class="text-warning">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star-half-alt"></i>
+              </div>
+            </div>
+            <p class="card-text">"以前总是听课效果不好，测评后发现我是动觉型学习者，采用边动手边学习的方法后，学习变得更有趣也更高效了。"</p>
+            <p class="small text-muted">- 王芳，12岁</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-5 text-center">
+  <div class="container">
+    <h2 class="mb-4">准备好发现你的学习超能力了吗？</h2>
+    <% if (user) { %>
+      <a href="/survey/start" class="btn btn-primary btn-lg">开始测评</a>
+    <% } else { %>
+      <a href="/user/register" class="btn btn-primary btn-lg">立即注册</a>
+    <% } %>
+  </div>
+</section> 

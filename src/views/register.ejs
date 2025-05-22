@@ -1,0 +1,112 @@
+
+<div class="row justify-content-center">
+  <div class="col-md-8 col-lg-6">
+    <div class="card shadow">
+      <div class="card-body p-5">
+        <h2 class="card-title text-center mb-4">用户注册</h2>
+        
+        <% if (error) { %>
+          <div class="alert alert-danger" role="alert">
+            <%= error %>
+          </div>
+        <% } %>
+        
+        <form action="/user/register" method="POST">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label for="username" class="form-label">用户名</label>
+              <input type="text" class="form-control" id="username" name="username" required>
+              <div class="form-text">用户名将作为登录账号</div>
+            </div>
+            
+            <div class="col-md-6">
+              <label for="name" class="form-label">姓名</label>
+              <input type="text" class="form-control" id="name" name="name" required>
+            </div>
+            
+            <div class="col-md-6">
+              <label for="password" class="form-label">密码</label>
+              <input type="password" class="form-control" id="password" name="password" required>
+              <div class="form-text">请设置6位以上密码</div>
+            </div>
+            
+            <div class="col-md-6">
+              <label for="confirmPassword" class="form-label">确认密码</label>
+              <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
+            </div>
+            
+            <div class="col-md-6">
+              <label for="age" class="form-label">年龄</label>
+              <select class="form-select" id="age" name="age" required>
+                <option value="" selected disabled>请选择年龄</option>
+                <% for (let i = 10; i <= 16; i++) { %>
+                  <option value="<%= i %>"><%= i %> 岁</option>
+                <% } %>
+              </select>
+            </div>
+            
+            <div class="col-md-6">
+              <label for="grade" class="form-label">年级</label>
+              <select class="form-select" id="grade" name="grade" required>
+                <option value="" selected disabled>请选择年级</option>
+                <option value="小学四年级">小学四年级</option>
+                <option value="小学五年级">小学五年级</option>
+                <option value="小学六年级">小学六年级</option>
+                <option value="初中一年级">初中一年级</option>
+                <option value="初中二年级">初中二年级</option>
+                <option value="初中三年级">初中三年级</option>
+                <option value="高中一年级">高中一年级</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="mt-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="agreeTerms" required>
+              <label class="form-check-label" for="agreeTerms">
+                我已阅读并同意<a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">用户协议和隐私政策</a>
+              </label>
+            </div>
+          </div>
+          
+          <div class="d-grid gap-2 mt-4">
+            <button type="submit" class="btn btn-primary">注册账号</button>
+          </div>
+        </form>
+        
+        <div class="text-center mt-4">
+          <p>已有账号？ <a href="/user/login">立即登录</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 用户协议模态框 -->
+<div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="termsModalLabel">用户协议和隐私政策</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <h6>用户协议</h6>
+        <p>欢迎使用LearnScan青少年学习风格诊断系统。本协议是您与LearnScan之间关于使用本服务所订立的协议。</p>
+        <p>1. 用户需要提供准确的个人信息，并对账号安全负责。</p>
+        <p>2. 测评结果仅供参考，不构成专业诊断或医学建议。</p>
+        <p>3. 用户同意不进行任何违法或不当使用本服务的行为。</p>
+        
+        <h6 class="mt-4">隐私政策</h6>
+        <p>我们非常重视您的隐私保护，特别是未成年人的隐私保护。</p>
+        <p>1. 我们收集的信息仅用于提供和改进服务。</p>
+        <p>2. 我们不会向任何第三方分享您的个人信息，除非获得您的明确同意。</p>
+        <p>3. 我们采取适当的技术措施保护您的数据安全。</p>
+        <p>4. 对于未满14岁的用户，请在父母或监护人的指导下使用本服务。</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">我已阅读并同意</button>
+      </div>
+    </div>
+  </div>
+</div> 

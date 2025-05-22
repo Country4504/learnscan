@@ -1,0 +1,1389 @@
+<div class="card shadow-sm">
+  <div class="card-body p-md-5">
+    <h2 class="text-center mb-4">学习风格测评问卷</h2>
+    
+    <div class="alert alert-info mb-4">
+      <p class="mb-0"><i class="fas fa-info-circle me-2"></i>请仔细阅读每个问题，选择最符合你实际情况的选项。本测评共40题，预计需要15-20分钟完成。</p>
+    </div>
+    
+    <form id="surveyForm" action="/survey/submit" method="POST">
+      <input type="hidden" name="ageGroup" value="<%= user.age >= 13 ? '13-16' : '10-12' %>">
+      
+      <!-- 进度条 -->
+      <div class="progress mb-4" style="height: 10px;">
+        <div id="surveyProgress" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+      </div>
+      
+      <!-- 感知偏好 (问题1-8) -->
+      <div class="question-group mb-5">
+        <h4 class="question-group-title mb-4"><i class="fas fa-eye me-2 text-primary"></i>感知偏好</h4>
+        
+        <div class="question-card">
+          <div class="card-body">
+            <h5 class="card-title">1. 当你学习新知识时，你更容易通过哪种方式理解？</h5>
+            <div class="mt-3">
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[0]" id="q1a" value="A" required>
+                <label class="option-label" for="q1a">
+                  看到图表、图片或文字
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[0]" id="q1b" value="B">
+                <label class="option-label" for="q1b">
+                  听老师讲解或与他人讨论
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[0]" id="q1c" value="C">
+                <label class="option-label" for="q1c">
+                  亲自动手操作或实践
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="option-input" type="radio" name="answers[0]" id="q1d" value="D">
+                <label class="option-label" for="q1d">
+                  以上方式都差不多
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="question-card">
+          <div class="card-body">
+            <h5 class="card-title">2. 回忆一次你成功学会的技能，是什么帮助你最快掌握它？</h5>
+            <div class="mt-3">
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[1]" id="q2a" value="A" required>
+                <label class="option-label" for="q2a">
+                  看书、视频或示范动作
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[1]" id="q2b" value="B">
+                <label class="option-label" for="q2b">
+                  听别人解释步骤和要点
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[1]" id="q2c" value="C">
+                <label class="option-label" for="q2c">
+                  反复练习和实际尝试
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="option-input" type="radio" name="answers[1]" id="q2d" value="D">
+                <label class="option-label" for="q2d">
+                  结合多种方式学习
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="question-card">
+          <div class="card-body">
+            <h5 class="card-title">3. 当你需要记住一个电话号码时，你通常会：</h5>
+            <div class="mt-3">
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[2]" id="q3a" value="A" required>
+                <label class="option-label" for="q3a">
+                  把数字写下来或在脑中想象数字外观
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[2]" id="q3b" value="B">
+                <label class="option-label" for="q3b">
+                  反复念出来或用节奏记忆
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[2]" id="q3c" value="C">
+                <label class="option-label" for="q3c">
+                  在键盘或空中"敲打"这些数字
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="option-input" type="radio" name="answers[2]" id="q3d" value="D">
+                <label class="option-label" for="q3d">
+                  结合以上方法
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="question-card">
+          <div class="card-body">
+            <h5 class="card-title">4. 学习一个复杂概念时，对你最有帮助的是：</h5>
+            <div class="mt-3">
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[3]" id="q4a" value="A" required>
+                <label class="option-label" for="q4a">
+                  查看图表、流程图或书面解释
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[3]" id="q4b" value="B">
+                <label class="option-label" for="q4b">
+                  听讲解或与人讨论
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[3]" id="q4c" value="C">
+                <label class="option-label" for="q4c">
+                  通过案例或实验亲身体验
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="option-input" type="radio" name="answers[3]" id="q4d" value="D">
+                <label class="option-label" for="q4d">
+                  需要多种方式结合
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="question-card">
+          <div class="card-body">
+            <h5 class="card-title">5. 你最喜欢的课堂活动是：</h5>
+            <div class="mt-3">
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[4]" id="q5a" value="A" required>
+                <label class="option-label" for="q5a">
+                  阅读材料或观看教学视频
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[4]" id="q5b" value="B">
+                <label class="option-label" for="q5b">
+                  听讲座或小组讨论
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[4]" id="q5c" value="C">
+                <label class="option-label" for="q5c">
+                  实验、角色扮演或实地考察
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="option-input" type="radio" name="answers[4]" id="q5d" value="D">
+                <label class="option-label" for="q5d">
+                  各种活动都喜欢
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="question-card">
+          <div class="card-body">
+            <h5 class="card-title">6. 当你迷路时，你更倾向于：</h5>
+            <div class="mt-3">
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[5]" id="q6a" value="A" required>
+                <label class="option-label" for="q6a">
+                  查看地图或方向指示
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[5]" id="q6b" value="B">
+                <label class="option-label" for="q6b">
+                  询问他人指导
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[5]" id="q6c" value="C">
+                <label class="option-label" for="q6c">
+                  凭直觉或以前的经验前行
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="option-input" type="radio" name="answers[5]" id="q6d" value="D">
+                <label class="option-label" for="q6d">
+                  结合地图和询问
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="question-card">
+          <div class="card-body">
+            <h5 class="card-title">7. 你学习时更喜欢老师：</h5>
+            <div class="mt-3">
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[6]" id="q7a" value="A" required>
+                <label class="option-label" for="q7a">
+                  使用图表、幻灯片或书面材料
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[6]" id="q7b" value="B">
+                <label class="option-label" for="q7b">
+                  详细讲解并提供口头指导
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[6]" id="q7c" value="C">
+                <label class="option-label" for="q7c">
+                  组织动手活动和实际演示
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="option-input" type="radio" name="answers[6]" id="q7d" value="D">
+                <label class="option-label" for="q7d">
+                  混合使用各种教学方法
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="question-card">
+          <div class="card-body">
+            <h5 class="card-title">8. 当你组装一个物品时，你倾向于：</h5>
+            <div class="mt-3">
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[7]" id="q8a" value="A" required>
+                <label class="option-label" for="q8a">
+                  阅读说明书并查看图示
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[7]" id="q8b" value="B">
+                <label class="option-label" for="q8b">
+                  请他人口头解释步骤
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[7]" id="q8c" value="C">
+                <label class="option-label" for="q8c">
+                  直接尝试组装，边做边调整
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="option-input" type="radio" name="answers[7]" id="q8d" value="D">
+                <label class="option-label" for="q8d">
+                  先看说明再开始组装
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 信息处理方式 (问题9-16) -->
+      <div class="question-group mb-5">
+        <h4 class="question-group-title mb-4"><i class="fas fa-brain me-2 text-primary"></i>信息处理方式</h4>
+        
+        <div class="question-card">
+          <div class="card-body">
+            <h5 class="card-title">9. 解决问题时，你通常会：</h5>
+            <div class="mt-3">
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[8]" id="q9a" value="A" required>
+                <label class="option-label" for="q9a">
+                  按照逻辑步骤一步步分析
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[8]" id="q9b" value="B">
+                <label class="option-label" for="q9b">
+                  跳过细节直接寻找整体解决方案
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[8]" id="q9c" value="C">
+                <label class="option-label" for="q9c">
+                  尝试多种可能的方法
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="option-input" type="radio" name="answers[8]" id="q9d" value="D">
+                <label class="option-label" for="q9d">
+                  视问题性质采用不同方法
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="question-card">
+          <div class="card-body">
+            <h5 class="card-title">10. 学习新主题时，你更喜欢：</h5>
+            <div class="mt-3">
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[9]" id="q10a" value="A" required>
+                <label class="option-label" for="q10a">
+                  从基础知识开始，逐步构建完整理解
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[9]" id="q10b" value="B">
+                <label class="option-label" for="q10b">
+                  先了解整体框架，再填补细节
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[9]" id="q10c" value="C">
+                <label class="option-label" for="q10c">
+                  跟随自己的兴趣点探索不同方面
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="option-input" type="radio" name="answers[9]" id="q10d" value="D">
+                <label class="option-label" for="q10d">
+                  根据主题难度选择不同方法
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="question-card">
+          <div class="card-body">
+            <h5 class="card-title">11. 做家庭作业时，你倾向于：</h5>
+            <div class="mt-3">
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[10]" id="q11a" value="A" required>
+                <label class="option-label" for="q11a">
+                  按照固定顺序，一项完成后再开始下一项
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[10]" id="q11b" value="B">
+                <label class="option-label" for="q11b">
+                  在不同作业间切换，或同时处理多项任务
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[10]" id="q11c" value="C">
+                <label class="option-label" for="q11c">
+                  先做最有趣或最容易的部分
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="option-input" type="radio" name="answers[10]" id="q11d" value="D">
+                <label class="option-label" for="q11d">
+                  根据截止日期和重要性安排
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="question-card">
+          <div class="card-body">
+            <h5 class="card-title">12. 阅读一本书时，你通常：</h5>
+            <div class="mt-3">
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[11]" id="q12a" value="A" required>
+                <label class="option-label" for="q12a">
+                  从头到尾按顺序阅读
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[11]" id="q12b" value="B">
+                <label class="option-label" for="q12b">
+                  先浏览目录和摘要，再选择感兴趣的部分
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[11]" id="q12c" value="C">
+                <label class="option-label" for="q12c">
+                  边读边跳过不感兴趣的部分
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="option-input" type="radio" name="answers[11]" id="q12d" value="D">
+                <label class="option-label" for="q12d">
+                  根据阅读目的调整方式
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="question-card">
+          <div class="card-body">
+            <h5 class="card-title">13. 学习一个复杂主题时，你更容易：</h5>
+            <div class="mt-3">
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[12]" id="q13a" value="A" required>
+                <label class="option-label" for="q13a">
+                  理解每个独立部分的详细内容
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[12]" id="q13b" value="B">
+                <label class="option-label" for="q13b">
+                  把握整体概念和各部分之间的关系
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[12]" id="q13c" value="C">
+                <label class="option-label" for="q13c">
+                  将新信息与已知内容联系起来
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="option-input" type="radio" name="answers[12]" id="q13d" value="D">
+                <label class="option-label" for="q13d">
+                  同时关注细节和整体
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="question-card">
+          <div class="card-body">
+            <h5 class="card-title">14. 当你需要记住大量信息时，你会：</h5>
+            <div class="mt-3">
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[13]" id="q14a" value="A" required>
+                <label class="option-label" for="q14a">
+                  创建详细的笔记或列表
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[13]" id="q14b" value="B">
+                <label class="option-label" for="q14b">
+                  制作概念图或思维导图
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[13]" id="q14c" value="C">
+                <label class="option-label" for="q14c">
+                  将信息分类或创建联想
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="option-input" type="radio" name="answers[13]" id="q14d" value="D">
+                <label class="option-label" for="q14d">
+                  结合多种记忆方法
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="question-card">
+          <div class="card-body">
+            <h5 class="card-title">15. 面对新的学习任务，你更倾向于：</h5>
+            <div class="mt-3">
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[14]" id="q15a" value="A" required>
+                <label class="option-label" for="q15a">
+                  寻找明确的指导和步骤
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[14]" id="q15b" value="B">
+                <label class="option-label" for="q15b">
+                  独立探索和发现解决方案
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[14]" id="q15c" value="C">
+                <label class="option-label" for="q15c">
+                  与他人合作讨论可能的方法
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="option-input" type="radio" name="answers[14]" id="q15d" value="D">
+                <label class="option-label" for="q15d">
+                  根据任务性质选择不同方法
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="question-card">
+          <div class="card-body">
+            <h5 class="card-title">16. 你更擅长：</h5>
+            <div class="mt-3">
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[15]" id="q16a" value="A" required>
+                <label class="option-label" for="q16a">
+                  记住具体的事实和细节
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[15]" id="q16b" value="B">
+                <label class="option-label" for="q16b">
+                  理解抽象概念和理论
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[15]" id="q16c" value="C">
+                <label class="option-label" for="q16c">
+                  应用知识解决实际问题
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="option-input" type="radio" name="answers[15]" id="q16d" value="D">
+                <label class="option-label" for="q16d">
+                  同时处理具体和抽象内容
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 学习环境偏好 (问题17-24) -->
+      <div class="question-group mb-5">
+        <h4 class="question-group-title mb-4"><i class="fas fa-home me-2 text-primary"></i>学习环境偏好</h4>
+        
+        <div class="question-card">
+          <div class="card-body">
+            <h5 class="card-title">17. 学习或做作业时，你偏好的环境是：</h5>
+            <div class="mt-3">
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[16]" id="q17a" value="A" required>
+                <label class="option-label" for="q17a">
+                  安静无干扰的地方
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[16]" id="q17b" value="B">
+                <label class="option-label" for="q17b">
+                  有轻柔背景音乐或环境音
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[16]" id="q17c" value="C">
+                <label class="option-label" for="q17c">
+                  有一定活动或讨论的环境
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="option-input" type="radio" name="answers[16]" id="q17d" value="D">
+                <label class="option-label" for="q17d">
+                  可以根据任务变换环境
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="question-card">
+          <div class="card-body">
+            <h5 class="card-title">18. 学习效率最高时，你通常：</h5>
+            <div class="mt-3">
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[17]" id="q18a" value="A" required>
+                <label class="option-label" for="q18a">
+                  独自一人专注学习
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[17]" id="q18b" value="B">
+                <label class="option-label" for="q18b">
+                  在他人在场但不交流的环境中
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[17]" id="q18c" value="C">
+                <label class="option-label" for="q18c">
+                  与同学或朋友一起学习讨论
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="option-input" type="radio" name="answers[17]" id="q18d" value="D">
+                <label class="option-label" for="q18d">
+                  在不同场景下都能有效学习
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="question-card">
+          <div class="card-body">
+            <h5 class="card-title">19. 你的理想学习空间是：</h5>
+            <div class="mt-3">
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[18]" id="q19a" value="A" required>
+                <label class="option-label" for="q19a">
+                  整洁有序，所有物品都有固定位置
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[18]" id="q19b" value="B">
+                <label class="option-label" for="q19b">
+                  舒适随意，周围可以有一些杂物
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[18]" id="q19c" value="C">
+                <label class="option-label" for="q19c">
+                  开放活跃，能自由移动和调整
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="option-input" type="radio" name="answers[18]" id="q19d" value="D">
+                <label class="option-label" for="q19d">
+                  能根据需要调整的多功能空间
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="question-card">
+          <div class="card-body">
+            <h5 class="card-title">20. 学习时间长了，你会：</h5>
+            <div class="mt-3">
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[19]" id="q20a" value="A" required>
+                <label class="option-label" for="q20a">
+                  保持原位休息几分钟再继续
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[19]" id="q20b" value="B">
+                <label class="option-label" for="q20b">
+                  离开座位活动一下再回来
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[19]" id="q20c" value="C">
+                <label class="option-label" for="q20c">
+                  完全转换到其他活动一段时间
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="option-input" type="radio" name="answers[19]" id="q20d" value="D">
+                <label class="option-label" for="q20d">
+                  根据疲劳程度选择不同方式
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="question-card">
+          <div class="card-body">
+            <h5 class="card-title">21. 学习时你偏好的光线是：</h5>
+            <div class="mt-3">
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[20]" id="q21a" value="A" required>
+                <label class="option-label" for="q21a">
+                  明亮的自然光或强光
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[20]" id="q21b" value="B">
+                <label class="option-label" for="q21b">
+                  温和的照明
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[20]" id="q21c" value="C">
+                <label class="option-label" for="q21c">
+                  较暗的环境
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="option-input" type="radio" name="answers[20]" id="q21d" value="D">
+                <label class="option-label" for="q21d">
+                  根据活动调整光线
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="question-card">
+          <div class="card-body">
+            <h5 class="card-title">22. 学习时你喜欢的姿势是：</h5>
+            <div class="mt-3">
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[21]" id="q22a" value="A" required>
+                <label class="option-label" for="q22a">
+                  坐在书桌前保持正确姿势
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[21]" id="q22b" value="B">
+                <label class="option-label" for="q22b">
+                  在沙发或床上舒适姿势
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[21]" id="q22c" value="C">
+                <label class="option-label" for="q22c">
+                  经常变换位置和姿势
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="option-input" type="radio" name="answers[21]" id="q22d" value="D">
+                <label class="option-label" for="q22d">
+                  根据学习内容选择不同姿势
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="question-card">
+          <div class="card-body">
+            <h5 class="card-title">23. 学习环境的温度对你的影响：</h5>
+            <div class="mt-3">
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[22]" id="q23a" value="A" required>
+                <label class="option-label" for="q23a">
+                  较凉爽的环境让我更专注
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[22]" id="q23b" value="B">
+                <label class="option-label" for="q23b">
+                  温暖舒适的环境让我更放松
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[22]" id="q23c" value="C">
+                <label class="option-label" for="q23c">
+                  温度对我影响不大
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="option-input" type="radio" name="answers[22]" id="q23d" value="D">
+                <label class="option-label" for="q23d">
+                  根据学习内容我需要不同温度
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="question-card">
+          <div class="card-body">
+            <h5 class="card-title">24. 你最有效率的学习时段是：</h5>
+            <div class="mt-3">
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[23]" id="q24a" value="A" required>
+                <label class="option-label" for="q24a">
+                  早晨
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[23]" id="q24b" value="B">
+                <label class="option-label" for="q24b">
+                  下午
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[23]" id="q24c" value="C">
+                <label class="option-label" for="q24c">
+                  晚上
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="option-input" type="radio" name="answers[23]" id="q24d" value="D">
+                <label class="option-label" for="q24d">
+                  不固定或取决于当天状态
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 思维模式 (问题25-32) -->
+      <div class="question-group mb-5">
+        <h4 class="question-group-title mb-4"><i class="fas fa-lightbulb me-2 text-primary"></i>思维模式</h4>
+        
+        <div class="question-card">
+          <div class="card-body">
+            <h5 class="card-title">25. 面对问题时，你通常：</h5>
+            <div class="mt-3">
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[24]" id="q25a" value="A" required>
+                <label class="option-label" for="q25a">
+                  分析各种可能性，寻找最合理解决方案
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[24]" id="q25b" value="B">
+                <label class="option-label" for="q25b">
+                  寻找创新独特的解决思路
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[24]" id="q25c" value="C">
+                <label class="option-label" for="q25c">
+                  参考以往经验和成功案例
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="option-input" type="radio" name="answers[24]" id="q25d" value="D">
+                <label class="option-label" for="q25d">
+                  结合分析和创意思考
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="question-card">
+          <div class="card-body">
+            <h5 class="card-title">26. 你更喜欢的学习任务是：</h5>
+            <div class="mt-3">
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[25]" id="q26a" value="A" required>
+                <label class="option-label" for="q26a">
+                  有明确答案和解决方法的问题
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[25]" id="q26b" value="B">
+                <label class="option-label" for="q26b">
+                  开放性问题，可以有多种解决方案
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[25]" id="q26c" value="C">
+                <label class="option-label" for="q26c">
+                  结合理论和实践的综合任务
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="option-input" type="radio" name="answers[25]" id="q26d" value="D">
+                <label class="option-label" for="q26d">
+                  根据学科不同有不同偏好
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="question-card">
+          <div class="card-body">
+            <h5 class="card-title">27. 在小组项目中，你通常扮演：</h5>
+            <div class="mt-3">
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[26]" id="q27a" value="A" required>
+                <label class="option-label" for="q27a">
+                  组织者或计划制定者
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[26]" id="q27b" value="B">
+                <label class="option-label" for="q27b">
+                  创意提供者或问题解决者
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[26]" id="q27c" value="C">
+                <label class="option-label" for="q27c">
+                  实施者或细节完善者
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="option-input" type="radio" name="answers[26]" id="q27d" value="D">
+                <label class="option-label" for="q27d">
+                  根据需要调整不同角色
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="question-card">
+          <div class="card-body">
+            <h5 class="card-title">28. 你更感兴趣的学习活动是：</h5>
+            <div class="mt-3">
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[27]" id="q28a" value="A" required>
+                <label class="option-label" for="q28a">
+                  需要逻辑推理和分析的活动
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[27]" id="q28b" value="B">
+                <label class="option-label" for="q28b">
+                  需要创意和想象力的活动
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[27]" id="q28c" value="C">
+                <label class="option-label" for="q28c">
+                  需要实际应用的活动
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="option-input" type="radio" name="answers[27]" id="q28d" value="D">
+                <label class="option-label" for="q28d">
+                  综合性的活动
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="question-card">
+          <div class="card-body">
+            <h5 class="card-title">29. 做决定时，你更倾向于：</h5>
+            <div class="mt-3">
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[28]" id="q29a" value="A" required>
+                <label class="option-label" for="q29a">
+                  基于事实和数据进行理性分析
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[28]" id="q29b" value="B">
+                <label class="option-label" for="q29b">
+                  考虑直觉和感受
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[28]" id="q29c" value="C">
+                <label class="option-label" for="q29c">
+                  权衡实际影响和可行性
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="option-input" type="radio" name="answers[28]" id="q29d" value="D">
+                <label class="option-label" for="q29d">
+                  综合考虑各种因素
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="question-card">
+          <div class="card-body">
+            <h5 class="card-title">30. 你更擅长的科目通常是：</h5>
+            <div class="mt-3">
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[29]" id="q30a" value="A" required>
+                <label class="option-label" for="q30a">
+                  数学、物理等需要逻辑思维的科目
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[29]" id="q30b" value="B">
+                <label class="option-label" for="q30b">
+                  语文、艺术等需要创造性的科目
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[29]" id="q30c" value="C">
+                <label class="option-label" for="q30c">
+                  生物、地理等需要记忆和理解的科目
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="option-input" type="radio" name="answers[29]" id="q30d" value="D">
+                <label class="option-label" for="q30d">
+                  在多种类型科目中表现均衡
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="question-card">
+          <div class="card-body">
+            <h5 class="card-title">31. 面对复杂信息，你倾向于：</h5>
+            <div class="mt-3">
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[30]" id="q31a" value="A" required>
+                <label class="option-label" for="q31a">
+                  将信息分类整理成逻辑结构
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[30]" id="q31b" value="B">
+                <label class="option-label" for="q31b">
+                  寻找不同信息间的联系和模式
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[30]" id="q31c" value="C">
+                <label class="option-label" for="q31c">
+                  关注最相关和实用的部分
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="option-input" type="radio" name="answers[30]" id="q31d" value="D">
+                <label class="option-label" for="q31d">
+                  综合使用多种方法处理
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="question-card">
+          <div class="card-body">
+            <h5 class="card-title">32. 解决问题时，你更看重：</h5>
+            <div class="mt-3">
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[31]" id="q32a" value="A" required>
+                <label class="option-label" for="q32a">
+                  效率和准确性
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[31]" id="q32b" value="B">
+                <label class="option-label" for="q32b">
+                  创新性和独特性
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[31]" id="q32c" value="C">
+                <label class="option-label" for="q32c">
+                  实用性和可行性
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="option-input" type="radio" name="answers[31]" id="q32d" value="D">
+                <label class="option-label" for="q32d">
+                  全面性和适应性
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 时间管理倾向 (问题33-40) -->
+      <div class="question-group mb-5">
+        <h4 class="question-group-title mb-4"><i class="fas fa-clock me-2 text-primary"></i>时间管理倾向</h4>
+        
+        <div class="question-card">
+          <div class="card-body">
+            <h5 class="card-title">33. 管理学习任务时，你通常：</h5>
+            <div class="mt-3">
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[32]" id="q33a" value="A" required>
+                <label class="option-label" for="q33a">
+                  制定详细计划并严格执行
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[32]" id="q33b" value="B">
+                <label class="option-label" for="q33b">
+                  有大致计划但保持灵活
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[32]" id="q33c" value="C">
+                <label class="option-label" for="q33c">
+                  根据心情和优先级临时决定
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="option-input" type="radio" name="answers[32]" id="q33d" value="D">
+                <label class="option-label" for="q33d">
+                  根据任务难度和重要性调整方法
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="question-card">
+          <div class="card-body">
+            <h5 class="card-title">34. 面对大型作业或项目，你会：</h5>
+            <div class="mt-3">
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[33]" id="q34a" value="A" required>
+                <label class="option-label" for="q34a">
+                  提前开始，分解成小任务逐步完成
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[33]" id="q34b" value="B">
+                <label class="option-label" for="q34b">
+                  在截止日期前集中时间完成
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[33]" id="q34c" value="C">
+                <label class="option-label" for="q34c">
+                  等有灵感或动力时再开始
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="option-input" type="radio" name="answers[33]" id="q34d" value="D">
+                <label class="option-label" for="q34d">
+                  根据项目类型采用不同策略
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="question-card">
+          <div class="card-body">
+            <h5 class="card-title">35. 你的学习桌面和材料通常：</h5>
+            <div class="mt-3">
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[34]" id="q35a" value="A" required>
+                <label class="option-label" for="q35a">
+                  整齐有序，每样东西都有固定位置
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[34]" id="q35b" value="B">
+                <label class="option-label" for="q35b">
+                  有一定程度的组织但不过于严格
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[34]" id="q35c" value="C">
+                <label class="option-label" for="q35c">
+                  随意摆放，但自己知道东西在哪
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="option-input" type="radio" name="answers[34]" id="q35d" value="D">
+                <label class="option-label" for="q35d">
+                  根据当前任务调整整理方式
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="question-card">
+          <div class="card-body">
+            <h5 class="card-title">36. 完成作业的方式，你更倾向于：</h5>
+            <div class="mt-3">
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[35]" id="q36a" value="A" required>
+                <label class="option-label" for="q36a">
+                  一次只专注一项任务直到完成
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[35]" id="q36b" value="B">
+                <label class="option-label" for="q36b">
+                  在不同任务间切换以保持兴趣
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[35]" id="q36c" value="C">
+                <label class="option-label" for="q36c">
+                  先完成简单或有趣的部分
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="option-input" type="radio" name="answers[35]" id="q36d" value="D">
+                <label class="option-label" for="q36d">
+                  根据截止日期和难度安排
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="question-card">
+          <div class="card-body">
+            <h5 class="card-title">37. 当计划被打断时，你通常会：</h5>
+            <div class="mt-3">
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[36]" id="q37a" value="A" required>
+                <label class="option-label" for="q37a">
+                  感到沮丧，尽快回到原计划
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[36]" id="q37b" value="B">
+                <label class="option-label" for="q37b">
+                  灵活调整，适应新情况
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[36]" id="q37c" value="C">
+                <label class="option-label" for="q37c">
+                  可能完全改变计划方向
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="option-input" type="radio" name="answers[36]" id="q37d" value="D">
+                <label class="option-label" for="q37d">
+                  评估情况后决定是否坚持原计划
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="question-card">
+          <div class="card-body">
+            <h5 class="card-title">38. 关于学习时间安排，你倾向于：</h5>
+            <div class="mt-3">
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[37]" id="q38a" value="A" required>
+                <label class="option-label" for="q38a">
+                  每天固定时间段学习特定科目
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[37]" id="q38b" value="B">
+                <label class="option-label" for="q38b">
+                  有大致规律但允许调整
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[37]" id="q38c" value="C">
+                <label class="option-label" for="q38c">
+                  根据当天状态和需求决定
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="option-input" type="radio" name="answers[37]" id="q38d" value="D">
+                <label class="option-label" for="q38d">
+                  结合固定安排和灵活调整
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="question-card">
+          <div class="card-body">
+            <h5 class="card-title">39. 面对多项待办事项，你会：</h5>
+            <div class="mt-3">
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[38]" id="q39a" value="A" required>
+                <label class="option-label" for="q39a">
+                  列出详细清单并按优先级完成
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[38]" id="q39b" value="B">
+                <label class="option-label" for="q39b">
+                  心中有大致计划但不一定写下来
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[38]" id="q39c" value="C">
+                <label class="option-label" for="q39c">
+                  处理当下最紧急或最感兴趣的事项
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="option-input" type="radio" name="answers[38]" id="q39d" value="D">
+                <label class="option-label" for="q39d">
+                  平衡优先级、兴趣和可用时间
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="question-card">
+          <div class="card-body">
+            <h5 class="card-title">40. 对于学习目标，你通常：</h5>
+            <div class="mt-3">
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[39]" id="q40a" value="A" required>
+                <label class="option-label" for="q40a">
+                  设定明确的短期和长期目标
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[39]" id="q40b" value="B">
+                <label class="option-label" for="q40b">
+                  有大方向但细节保持开放
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="option-input" type="radio" name="answers[39]" id="q40c" value="C">
+                <label class="option-label" for="q40c">
+                  专注当下，较少设定长期目标
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="option-input" type="radio" name="answers[39]" id="q40d" value="D">
+                <label class="option-label" for="q40d">
+                  根据学科和情况设定不同类型目标
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 补充信息（可选） -->
+      <div class="mb-5">
+        <h4 class="mb-4">补充信息（可选）</h4>
+        
+        <div class="mb-3">
+          <label for="challenges" class="form-label">你在学习中面临的主要挑战是什么？</label>
+          <textarea class="form-control" id="challenges" name="challenges" rows="3" placeholder="例如：注意力不集中、记忆力差、学习动力不足等"></textarea>
+        </div>
+        
+        <div class="mb-3">
+          <label for="expectations" class="form-label">你希望通过这次测评获得什么帮助？</label>
+          <textarea class="form-control" id="expectations" name="expectations" rows="3" placeholder="例如：提高记忆效率、找到适合的学习方法等"></textarea>
+        </div>
+        
+        <div class="mb-3">
+          <label for="otherInfo" class="form-label">其他你想告诉我们的信息</label>
+          <textarea class="form-control" id="otherInfo" name="otherInfo" rows="3" placeholder="任何你认为对测评有帮助的信息"></textarea>
+        </div>
+      </div>
+      
+      <!-- 提交按钮 -->
+      <div class="text-center">
+        <button type="submit" class="btn btn-primary btn-lg">提交测评</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  // 初始化问卷表单
+  document.addEventListener('DOMContentLoaded', function() {
+    const surveyForm = document.getElementById('surveyForm');
+    const progressBar = document.getElementById('surveyProgress');
+    const questionGroups = document.querySelectorAll('.question-group');
+    const totalQuestions = 40; // 总问题数
+    
+    // 更新进度条
+    function updateProgress() {
+      const answeredInputs = surveyForm.querySelectorAll('input[type="radio"]:checked');
+      const answeredCount = answeredInputs.length;
+      const percentage = Math.round((answeredCount / totalQuestions) * 100);
+      
+      progressBar.style.width = percentage + '%';
+      progressBar.setAttribute('aria-valuenow', percentage);
+      progressBar.textContent = percentage + '%';
+    }
+    
+    // 为所有单选按钮添加事件监听
+    const radioInputs = surveyForm.querySelectorAll('input[type="radio"]');
+    radioInputs.forEach(input => {
+      input.addEventListener('change', updateProgress);
+    });
+    
+    // 初始化进度
+    updateProgress();
+    
+    // 表单提交前确认
+    surveyForm.addEventListener('submit', function(event) {
+      const answeredInputs = surveyForm.querySelectorAll('input[type="radio"]:checked');
+      if (answeredInputs.length < totalQuestions) {
+        event.preventDefault();
+        if (!confirm(`你还有${totalQuestions - answeredInputs.length}个问题未回答，确定要提交吗？`)) {
+          return false;
+        }
+      }
+    });
+  });
+</script> 

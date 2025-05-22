@@ -1,0 +1,170 @@
+<div class="row g-4">
+  <!-- 左侧个人信息卡片 -->
+  <div class="col-lg-4">
+    <div class="card shadow-sm">
+      <div class="card-body text-center p-4">
+        <div class="avatar bg-primary text-white rounded-circle mx-auto mb-4 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px; font-size: 2rem;">
+          <%= user.name.charAt(0) %>
+        </div>
+        <h3 class="card-title h4"><%= user.name %></h3>
+        <p class="card-text text-muted"><%= user.age %>岁，<%= user.grade %></p>
+        
+        <hr>
+        
+        <div class="d-grid gap-2">
+          <a href="/survey/start" class="btn btn-primary">开始新测评</a>
+          <a href="/user/profile" class="btn btn-outline-secondary">编辑个人资料</a>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 个人统计卡片 -->
+    <div class="card mt-4 shadow-sm">
+      <div class="card-header bg-light">
+        <h4 class="card-title h5 mb-0">个人统计</h4>
+      </div>
+      <div class="card-body">
+        <% if (typeof userStats !== 'undefined' && userStats) { %>
+          <div class="row g-3 text-center">
+            <div class="col-6">
+              <div class="border rounded p-3">
+                <h5 class="h2 mb-0 text-primary"><%= userStats.completedSurveys || 0 %></h5>
+                <small class="text-muted">完成测评</small>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="border rounded p-3">
+                <h5 class="h2 mb-0 text-success"><%= userStats.totalStrategies || 0 %></h5>
+                <small class="text-muted">学习策略</small>
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="border rounded p-3">
+                <% if (userStats.latestStyle) { %>
+                  <h5 class="text-center mb-0 text-info"><%= userStats.latestStyle %></h5>
+                  <small class="text-muted d-block text-center">最新学习风格</small>
+                <% } else { %>
+                  <p class="text-muted mb-0">暂无测评记录</p>
+                <% } %>
+              </div>
+            </div>
+          </div>
+        <% } else { %>
+          <div class="text-center py-3">
+            <p class="text-muted mb-0">完成测评后显示统计信息</p>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 右侧主内容区 -->
+  <div class="col-lg-8">
+    <!-- 最近测评 -->
+    <div class="card shadow-sm mb-4">
+      <div class="card-header bg-light d-flex justify-content-between align-items-center">
+        <h4 class="card-title h5 mb-0">最近测评</h4>
+        <a href="/report/history" class="btn btn-sm btn-outline-primary">查看全部</a>
+      </div>
+      <div class="card-body">
+        <% if (typeof recentReports !== 'undefined' && recentReports && recentReports.length > 0) { %>
+          <div class="list-group list-group-flush">
+            <% recentReports.forEach(report => { %>
+              <a href="/report/view/<%= report._id %>" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                <div>
+                  <h5 class="mb-1">学习风格测评结果</h5>
+                  <p class="mb-1 text-muted small">
+                    完成时间：<%= report.survey ? new Date(report.survey.completedAt).toLocaleString('zh-CN') : '未知' %>
+                  </p>
+                </div>
+                <span class="badge bg-primary rounded-pill"><%= report.learningTypeCode %></span>
+              </a>
+            <% }); %>
+          </div>
+        <% } else { %>
+          <div class="text-center py-4">
+            <p class="text-muted mb-3">您还没有完成任何测评</p>
+            <a href="/survey/start" class="btn btn-primary">开始第一次测评</a>
+          </div>
+        <% } %>
+      </div>
+    </div>
+    
+    <!-- 学习风格概览 -->
+    <div class="card shadow-sm">
+      <div class="card-header bg-light">
+        <h4 class="card-title h5 mb-0">学习风格概览</h4>
+      </div>
+      <div class="card-body">
+        <% if (typeof latestReport !== 'undefined' && latestReport) { %>
+          <p>基于您最近的测评，您的主要学习风格特点为：</p>
+          
+          <div class="row g-4 mt-2">
+            <% if (latestReport.dominantType) { %>
+              <% if (latestReport.dominantType.perceptionType) { %>
+                <div class="col-md-6">
+                  <div class="card h-100 border-0 bg-light">
+                    <div class="card-body">
+                      <h5 class="card-title">
+                        <i class="fas fa-eye text-primary me-2"></i>
+                        <%= latestReport.dominantType.perceptionType %>
+                      </h5>
+                      <p class="card-text"><%= styleDescriptions && styleDescriptions[latestReport.dominantType.perceptionType] || '' %></p>
+                    </div>
+                  </div>
+                </div>
+              <% } %>
+              
+              <% if (latestReport.dominantType.processingType) { %>
+                <div class="col-md-6">
+                  <div class="card h-100 border-0 bg-light">
+                    <div class="card-body">
+                      <h5 class="card-title">
+                        <i class="fas fa-sitemap text-primary me-2"></i>
+                        <%= latestReport.dominantType.processingType %>
+                      </h5>
+                      <p class="card-text"><%= styleDescriptions && styleDescriptions[latestReport.dominantType.processingType] || '' %></p>
+                    </div>
+                  </div>
+                </div>
+              <% } %>
+              
+              <% if (latestReport.dominantType.environmentType) { %>
+                <div class="col-md-6">
+                  <div class="card h-100 border-0 bg-light">
+                    <div class="card-body">
+                      <h5 class="card-title">
+                        <i class="fas fa-home text-primary me-2"></i>
+                        <%= latestReport.dominantType.environmentType %>
+                      </h5>
+                      <p class="card-text"><%= styleDescriptions && styleDescriptions[latestReport.dominantType.environmentType] || '' %></p>
+                    </div>
+                  </div>
+                </div>
+              <% } %>
+              
+              <% if (latestReport.dominantType.timeManagementType) { %>
+                <div class="col-md-6">
+                  <div class="card h-100 border-0 bg-light">
+                    <div class="card-body">
+                      <h5 class="card-title">
+                        <i class="fas fa-calendar text-primary me-2"></i>
+                        <%= latestReport.dominantType.timeManagementType %>
+                      </h5>
+                      <p class="card-text"><%= styleDescriptions && styleDescriptions[latestReport.dominantType.timeManagementType] || '' %></p>
+                    </div>
+                  </div>
+                </div>
+              <% } %>
+            <% } %>
+          </div>
+        <% } else { %>
+          <div class="text-center py-4">
+            <p class="text-muted mb-3">完成您的第一次测评，了解您的学习风格特点</p>
+            <a href="/survey/start" class="btn btn-primary">开始测评</a>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>

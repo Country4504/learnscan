@@ -1,0 +1,58 @@
+version: '3'
+
+services:
+  # MongoDB服务
+  mongodb:
+    image: mongo:latest
+    container_name: learning-scan-mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=password
+      - MONGO_INITDB_DATABASE=learning_scan
+    networks:
+      - app-network
+
+  # 应用服务
+  app:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: learning-scan-app
+    restart: always
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongodb
+    environment:
+      - NODE_ENV=development
+      - MONGODB_URI=mongodb://root:password@mongodb:27017/learning_scan?authSource=admin
+      - "OPENAI_API_KEY=sk-8f66f0d6c6dd42569f6b0ba4cc87ddb6"
+      - "OPENAI_API_ENDPOINT=https://api.deepseek.com"
+      - "OPENAI_MODEL=deepseek-chat"
+    volumes:
+      - ../src:/usr/src/app/src
+      - ../public:/usr/src/app/public
+      - ../server.js:/usr/src/app/server.js
+      - ../package.json:/usr/src/app/package.json
+      - ../package-lock.json:/usr/src/app/package-lock.json
+      - ../nodemon.json:/usr/src/app/nodemon.json
+      - /usr/src/app/node_modules
+    command: npm run dev
+    networks:
+      - app-network
+
+# 创建持久卷来保存数据
+volumes:
+  mongo-data:
+    driver: local
+
+# 创建网络
+networks:
+  app-network:
+    driver: bridge 
