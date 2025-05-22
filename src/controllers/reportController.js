@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Report = require('../models/Report');
+const ParentAdvice = require('../models/ParentAdvice');
 const mongoose = require('mongoose');
 const path = require('path');
 const fs = require('fs');
@@ -103,43 +104,61 @@ router.get('/history', isAuthenticated, async (req, res) => {
 });
 
 // 获取AI家长建议
-router.get('/view/:id/parent-advice', isAuthenticated, validateObjectId, async (req, res) => {
+router.get('/view/:reportId/parent-advice', isAuthenticated, validateObjectId, async (req, res) => {
   try {
-    const reportId = req.params.id;
+    const reportId = req.params.reportId;
     
-    // 查找报告
+    // 首先检查数据库中是否已存在该报告的建议
+    let existingAdvice = await ParentAdvice.findOne({ report: reportId });
+    
+    if (existingAdvice) {
+      // 如果存在，直接返回已有的建议
+      return res.json({
+        success: true,
+        data: existingAdvice.advice
+      });
+    }
+    
+    // 如果不存在，获取报告数据
     const report = await Report.findById(reportId)
       .populate('survey')
       .populate('user', 'name age grade');
     
     if (!report) {
-      return res.status(404).json({ 
-        success: false, 
-        message: '报告未找到' 
+      return res.status(404).json({
+        success: false,
+        message: '未找到报告'
       });
     }
     
     // 确保只有报告所有者可以查看
     if (report.user._id.toString() !== req.session.user.id) {
-      return res.status(403).json({ 
-        success: false, 
-        message: '您没有权限查看此报告' 
+      return res.status(403).json({
+        success: false,
+        message: '您没有权限查看此报告'
       });
     }
     
-    // 生成AI建议 - 直接使用导入的服务，不进行new实例化
-    const parentAdvice = await OpenAIService.generateParentAdvice(report);
+    // 调用OpenAI生成建议
+    const aiAdvice = await OpenAIService.generateParentAdvice(report);
     
-    return res.json({
-      success: true,
-      data: parentAdvice
+    // 保存建议到数据库
+    const newAdvice = new ParentAdvice({
+      report: reportId,
+      advice: aiAdvice
     });
+    await newAdvice.save();
+    
+    res.json({
+      success: true,
+      data: aiAdvice
+    });
+    
   } catch (error) {
-    console.error('获取AI家长建议错误:', error);
-    return res.status(500).json({
+    console.error('生成家长建议时出错:', error);
+    res.status(500).json({
       success: false,
-      message: '获取AI家长建议时出错',
-      error: error.message
+      message: error.message || '生成建议时出错'
     });
   }
 });

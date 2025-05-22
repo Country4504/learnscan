@@ -182,11 +182,6 @@
           <button id="generateAllAdviceBtn" class="btn btn-primary btn-sm">
             <i class="fas fa-magic me-1"></i> 生成AI建议
           </button>
-          <div id="adviceLoading" class="d-none ms-2">
-            <div class="spinner-border spinner-border-sm text-primary" role="status">
-              <span class="visually-hidden">正在生成建议...</span>
-            </div>
-          </div>
         </div>
       </div>
       
@@ -726,22 +721,21 @@
     
     // 显示加载状态
     function showLoadingState() {
-      const loadingElement = document.getElementById('adviceLoading');
       const generateAllBtn = document.getElementById('generateAllAdviceBtn');
-      
-      loadingElement.classList.remove('d-none');
       generateAllBtn.disabled = true;
-      generateAllBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>正在生成...';
+      generateAllBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>正在加载...';
     }
 
     // 隐藏加载状态
     function hideLoadingState() {
-      const loadingElement = document.getElementById('adviceLoading');
       const generateAllBtn = document.getElementById('generateAllAdviceBtn');
-      
-      loadingElement.classList.add('d-none');
       generateAllBtn.disabled = false;
-      generateAllBtn.innerHTML = '<i class="fas fa-magic me-1"></i> 生成AI建议';
+      // 根据是否已有建议显示不同的按钮文本
+      if (parentAdvice) {
+        generateAllBtn.innerHTML = '<i class="fas fa-sync-alt me-1"></i> 重新生成AI建议';
+      } else {
+        generateAllBtn.innerHTML = '<i class="fas fa-magic me-1"></i> 生成AI建议';
+      }
     }
 
     // 显示错误信息
@@ -749,6 +743,11 @@
       const errorElement = document.getElementById('adviceError');
       document.getElementById('errorMessage').textContent = message;
       errorElement.classList.remove('d-none');
+      
+      // 5秒后自动隐藏错误信息
+      setTimeout(() => {
+        errorElement.classList.add('d-none');
+      }, 5000);
     }
 
     // 更新建议内容
@@ -770,6 +769,42 @@
           element.textContent = advice[field.key] || '暂无建议';
         }
       });
+    }
+
+    // 检查并显示已存在的建议
+    async function checkExistingAdvice() {
+      try {
+        const response = await fetch(`/report/view/${reportId}/parent-advice`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        if (data.success && data.data) {
+          parentAdvice = data.data;
+          
+          // 更新按钮文本为"重新生成AI建议"
+          const generateAllBtn = document.getElementById('generateAllAdviceBtn');
+          generateAllBtn.innerHTML = '<i class="fas fa-sync-alt me-1"></i> 重新生成AI建议';
+          
+          // 更新每个维度的建议内容
+          const dimensions = {
+            '感知偏好': 'perception',
+            '信息处理方式': 'processing',
+            '学习环境偏好': 'environment',
+            '思维模式': 'thinking',
+            '时间管理倾向': 'timeManagement'
+          };
+
+          for (const [dimensionName, dimensionKey] of Object.entries(dimensions)) {
+            if (parentAdvice[dimensionName]) {
+              updateAdviceContent(dimensionKey, parentAdvice[dimensionName]);
+            }
+          }
+        }
+      } catch (error) {
+        console.error('获取已存在建议时出错:', error);
+      }
     }
 
     // 生成并显示所有建议
@@ -813,7 +848,10 @@
       }
     }
 
-    // 添加生成按钮事件监听
+    // 页面加载时检查已存在的建议
+    checkExistingAdvice();
+
+    // 绑定生成建议按钮事件
     document.getElementById('generateAllAdviceBtn').addEventListener('click', generateAllAdvice);
   });
 </script> 
