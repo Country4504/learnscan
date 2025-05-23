@@ -7,7 +7,8 @@ services:
     container_name: learning-scan-mongodb
     restart: always
     ports:
-      - "27017:27017"
+      - "27016:27016"
+    command: mongod --port 27016
     volumes:
       - mongo-data:/data/db
       - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
@@ -26,12 +27,13 @@ services:
     container_name: learning-scan-app
     restart: always
     ports:
-      - "3000:3000"
+      - "80:80"
     depends_on:
       - mongodb
     environment:
       - NODE_ENV=development
-      - MONGODB_URI=mongodb://root:password@mongodb:27017/learning_scan?authSource=admin
+      - PORT=80
+      - MONGODB_URI=mongodb://root:password@mongodb:27016/learning_scan?authSource=admin
       - "OPENAI_API_KEY=sk-8f66f0d6c6dd42569f6b0ba4cc87ddb6"
       - "OPENAI_API_ENDPOINT=https://api.deepseek.com"
       - "OPENAI_MODEL=deepseek-chat"

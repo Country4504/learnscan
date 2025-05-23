@@ -1,4 +1,4 @@
-FROM node:16
+FROM node
 
 # 安装Puppeteer所需的系统依赖
 RUN apt-get update && apt-get install -y \
@@ -31,6 +31,7 @@ RUN npm install
 
 # 设置开发环境
 ENV NODE_ENV=development
+ENV PORT=80
 
 # 全局安装nodemon
 RUN npm install -g nodemon
@@ -42,7 +43,7 @@ RUN npm install -g nodemon
 COPY . .
 
 # 暴露端口
-EXPOSE 3000
+EXPOSE 80
 
 # 使用nodemon启动应用
 CMD ["npm", "run", "dev"] 
