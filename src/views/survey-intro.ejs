@@ -1,77 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> | LearnScan</title>
+  <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.3.0/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
+</head>
+<body>
+  <!-- 导航栏 -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+      <a class="navbar-brand" href="/">
+        <img src="/images/logo.png" alt="LearnScan Logo" height="30">
+        LearnScan
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/">首页</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/about">关于</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/help">使用帮助</a>
+          </li>
+        </ul>
+        <ul class="navbar-nav">
+          <% if (user) { %>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <%= user.name %>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="/user/dashboard">个人中心</a></li>
+                <li><a class="dropdown-item" href="/report/history">测评历史</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="/user/logout">退出登录</a></li>
+              </ul>
+            </li>
+          <% } else { %>
+            <li class="nav-item">
+              <a class="nav-link" href="/user/login">登录</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/user/register">注册</a>
+            </li>
+          <% } %>
+        </ul>
+      </div>
+    </div>
+  </nav>
 
-<div class="card shadow-sm">
-  <div class="card-body p-md-5">
-    <h2 class="text-center mb-4">学习风格测评</h2>
-    
-    <div class="alert alert-info">
-      <h5 class="alert-heading"><i class="fas fa-info-circle me-2"></i>测评说明</h5>
-      <p>亲爱的同学：</p>
-      <p>这份测评问卷旨在帮助你了解自己独特的学习风格和特点。答案没有对错之分，请根据你的真实情况选择最符合你的选项。完成后，你将获得一份个性化的学习风格报告，帮助你发现更适合自己的学习方法。</p>
-      <ul>
-        <li>测评时间：约15-20分钟</li>
-        <li>题目数量：40题</li>
-        <li>年龄适用：10-16岁</li>
-      </ul>
-    </div>
-    
-    <h4 class="mt-4 mb-3">测评内容</h4>
-    <div class="row g-4">
-      <div class="col-md-6">
-        <div class="card h-100">
-          <div class="card-body">
-            <h5 class="card-title">感知偏好</h5>
-            <p class="card-text">了解你更偏好通过视觉、听觉还是动觉方式获取信息，这将帮助你选择最有效的学习材料和方法。</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-6">
-        <div class="card h-100">
-          <div class="card-body">
-            <h5 class="card-title">信息处理方式</h5>
-            <p class="card-text">发现你是系统性还是跳跃性处理信息，帮助你找到最适合的学习路径和组织方式。</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-6">
-        <div class="card h-100">
-          <div class="card-body">
-            <h5 class="card-title">学习环境偏好</h5>
-            <p class="card-text">了解什么样的环境条件对你的学习最有帮助，包括声音、光线、温度等因素。</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-6">
-        <div class="card h-100">
-          <div class="card-body">
-            <h5 class="card-title">思维模式</h5>
-            <p class="card-text">探索你的思维倾向是偏向分析型还是创造型，这将帮助你更好地发挥自己的思维优势。</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-6">
-        <div class="card h-100">
-          <div class="card-body">
-            <h5 class="card-title">时间管理倾向</h5>
-            <p class="card-text">发现你在时间管理方面是计划型还是适应型，帮助你找到最适合的学习规划方式。</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-6">
-        <div class="card h-100">
-          <div class="card-body">
-            <h5 class="card-title">学习策略推荐</h5>
-            <p class="card-text">根据你的测评结果，我们将提供匹配你学习风格的个性化学习方法和策略建议。</p>
+  <!-- 主内容区 -->
+  <main class="container py-4">
+    <div class="intro-section" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 4rem 0; margin: -2rem -15px 2rem -15px;">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-lg-8 text-center">
+            <h1 class="display-4 mb-4">学习风格测评问卷</h1>
+            <p class="lead mb-4">了解您的学习偏好，发现最适合您的学习方法</p>
+            
+            <% if (testCount) { %>
+              <div style="background-color: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 0.5rem; padding: 1rem; margin-bottom: 2rem;">
+                <i class="fas fa-info-circle me-2"></i>
+                您还有 <strong><%= testCount %></strong> 次测评机会
+              </div>
+            <% } %>
           </div>
         </div>
       </div>
     </div>
-    
-    <div class="alert alert-warning mt-4">
-      <p class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i>请诚实回答每个问题，选择最符合你自己情况的选项，而不是你认为"应该"选择的答案。</p>
+
+    <div class="card shadow-sm">
+      <div class="card-body p-md-5">
+        <h2 class="text-center mb-4">学习风格测评</h2>
+        
+        <div class="alert alert-info">
+          <h5 class="alert-heading"><i class="fas fa-info-circle me-2"></i>测评说明</h5>
+          <p>亲爱的同学：</p>
+          <p>这份测评问卷旨在帮助你了解自己独特的学习风格和特点。答案没有对错之分，请根据你的真实情况选择最符合你的选项。完成后，你将获得一份个性化的学习风格报告，帮助你发现更适合自己的学习方法。</p>
+          <ul>
+            <li>测评时间：约15-20分钟</li>
+            <li>题目数量：40题</li>
+            <li>年龄适用：10-16岁</li>
+          </ul>
+        </div>
+        
+        <h4 class="mt-4 mb-3">测评内容</h4>
+        <div class="row g-4">
+          <div class="col-md-6">
+            <div class="card h-100">
+              <div class="card-body">
+                <h5 class="card-title">感知偏好</h5>
+                <p class="card-text">了解你更偏好通过视觉、听觉还是动觉方式获取信息，这将帮助你选择最有效的学习材料和方法。</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card h-100">
+              <div class="card-body">
+                <h5 class="card-title">信息处理方式</h5>
+                <p class="card-text">发现你是系统性还是跳跃性处理信息，帮助你找到最适合的学习路径和组织方式。</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card h-100">
+              <div class="card-body">
+                <h5 class="card-title">学习环境偏好</h5>
+                <p class="card-text">了解什么样的环境条件对你的学习最有帮助，包括声音、光线、温度等因素。</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card h-100">
+              <div class="card-body">
+                <h5 class="card-title">思维模式</h5>
+                <p class="card-text">探索你的思维倾向是偏向分析型还是创造型，这将帮助你更好地发挥自己的思维优势。</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card h-100">
+              <div class="card-body">
+                <h5 class="card-title">时间管理倾向</h5>
+                <p class="card-text">发现你在时间管理方面是计划型还是适应型，帮助你找到最适合的学习规划方式。</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card h-100">
+              <div class="card-body">
+                <h5 class="card-title">学习策略推荐</h5>
+                <p class="card-text">根据你的测评结果，我们将提供匹配你学习风格的个性化学习方法和策略建议。</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="alert alert-warning mt-4">
+          <p class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i>请诚实回答每个问题，选择最符合你自己情况的选项，而不是你认为"应该"选择的答案。</p>
+        </div>
+        
+        <div class="text-center mt-4">
+          <a href="/survey/questions" class="btn btn-primary btn-lg">开始测评</a>
+        </div>
+      </div>
     </div>
-    
-    <div class="text-center mt-4">
-      <a href="/survey/questions" class="btn btn-primary btn-lg">开始测评</a>
+  </main>
+
+  <!-- 页脚 -->
+  <footer class="footer mt-auto py-3 bg-light">
+    <div class="container text-center">
+      <span class="text-muted">© 2024 LearnScan 青少年学习风格诊断系统</span>
     </div>
-  </div>
-</div> 
+  </footer>
+
+  <!-- JavaScript 库 -->
+  <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/main.js"></script>
+</body>
+</html> 

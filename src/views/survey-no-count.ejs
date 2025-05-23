@@ -1,0 +1,60 @@
+<%- contentFor('style') %>
+<style>
+  .no-count-container {
+    min-height: 60vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .no-count-card {
+    max-width: 500px;
+    text-align: center;
+  }
+  .icon-large {
+    font-size: 4rem;
+    color: #dc3545;
+    margin-bottom: 1rem;
+  }
+</style>
+<%- contentFor('style') %>
+
+<div class="no-count-container">
+  <div class="card no-count-card">
+    <div class="card-body">
+      <div class="icon-large">
+        <i class="fas fa-exclamation-triangle"></i>
+      </div>
+      <h2 class="card-title text-danger mb-3">测评次数不足</h2>
+      <p class="card-text mb-4">
+        抱歉，您当前的测评次数为 <strong><%= testCount %></strong>，无法进行新的测评。
+      </p>
+      <div class="alert alert-info">
+        <strong>如需增加测评次数，请：</strong><br>
+        1. 联系您的老师或管理员<br>
+        2. 管理员可以在后台为您增加测评次数
+      </div>
+      <div class="mt-4">
+        <a href="/user/dashboard" class="btn btn-primary">返回个人中心</a>
+        <a href="/report/history" class="btn btn-outline-secondary ms-2">查看历史报告</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- contentFor('script') %>
+<script>
+// 可以添加一些交互效果
+document.addEventListener('DOMContentLoaded', function() {
+  // 添加一些动画效果
+  const card = document.querySelector('.no-count-card');
+  card.style.opacity = '0';
+  card.style.transform = 'translateY(20px)';
+  
+  setTimeout(() => {
+    card.style.transition = 'all 0.5s ease';
+    card.style.opacity = '1';
+    card.style.transform = 'translateY(0)';
+  }, 100);
+});
+</script>
+<%- contentFor('script') %> 

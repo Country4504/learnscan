@@ -57,10 +57,15 @@ router.get('/view/:reportId', isAuthenticated, validateObjectId, async (req, res
       });
     }
     
+    // 检查是否已存在AI建议
+    const existingAdvice = await ParentAdvice.findOne({ report: reportId });
+    const hasAIAdvice = !!existingAdvice;
+    
     res.render('report-view', {
       title: '学习风格诊断报告',
       user: req.session.user,
-      report: report
+      report: report,
+      hasAIAdvice: hasAIAdvice
     });
   } catch (error) {
     console.error('查看报告错误:', error);

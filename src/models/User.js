@@ -27,6 +27,39 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  status: {
+    type: String,
+    enum: ['pending', 'approved', 'rejected'],
+    default: 'pending'
+  },
+  reviewedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Admin',
+    default: null
+  },
+  reviewedAt: {
+    type: Date,
+    default: null
+  },
+  reviewComment: {
+    type: String,
+    default: ''
+  },
+  testCount: {
+    type: Number,
+    default: 2,
+    min: 0
+  },
+  testHistory: [{
+    testDate: {
+      type: Date,
+      default: Date.now
+    },
+    reportId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Report'
+    }
+  }],
   createdAt: {
     type: Date,
     default: Date.now
@@ -49,6 +82,20 @@ userSchema.pre('save', async function(next) {
 // 验证密码方法
 userSchema.methods.comparePassword = async function(candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password);
+};
+
+// 使用测评次数
+userSchema.methods.useTestCount = async function(reportId) {
+  if (this.testCount > 0) {
+    this.testCount -= 1;
+    this.testHistory.push({
+      testDate: new Date(),
+      reportId: reportId
+    });
+    await this.save();
+    return true;
+  }
+  return false;
 };
 
 const User = mongoose.model('User', userSchema);

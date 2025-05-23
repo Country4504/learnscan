@@ -32,6 +32,15 @@ router.post('/login', async (req, res) => {
     if (!isMatch) {
       return res.redirect('/user/login?error=用户名或密码错误');
     }
+
+    // 检查用户状态
+    if (user.status === 'pending') {
+      return res.redirect('/user/login?error=您的账号正在审核中，请耐心等待');
+    }
+    
+    if (user.status === 'rejected') {
+      return res.redirect('/user/login?error=您的账号未通过审核，原因：' + (user.reviewComment || '未提供原因'));
+    }
     
     // 创建会话
     req.session.user = {
@@ -83,33 +92,27 @@ router.post('/register', async (req, res) => {
       password,
       name,
       age: parseInt(age),
-      grade
+      grade,
+      status: 'pending' // 设置初始状态为待审核
     });
     
     await newUser.save();
     
-    // 检查并删除任何可能存在的测评记录
-    const existingSurveys = await Survey.find({ user: newUser._id });
-    if (existingSurveys.length > 0) {
-      console.error(`检测到新用户 ${newUser._id} 存在自动生成的测评记录，正在清理...`);
-      await Survey.deleteMany({ user: newUser._id });
-      await Report.deleteMany({ user: newUser._id });
-    }
-    
-    // 自动登录
-    req.session.user = {
-      id: newUser._id.toString(),
-      username: newUser.username,
-      name: newUser.name,
-      age: newUser.age,
-      grade: newUser.grade
-    };
-    
-    res.redirect('/user/dashboard');
+    // 注册成功后重定向到等待审核页面
+    res.redirect('/user/pending-approval');
   } catch (error) {
     console.error('注册错误:', error);
     res.redirect('/user/register?error=注册过程中发生错误');
   }
+});
+
+// 添加等待审核页面路由
+router.get('/pending-approval', (req, res) => {
+  res.render('pending-approval', {
+    title: '等待审核',
+    user: null,
+    layout: false  // 禁用默认布局
+  });
 });
 
 // 用户仪表盘
@@ -120,6 +123,12 @@ router.get('/dashboard', async (req, res) => {
 
   try {
     const userId = req.session.user.id;
+
+    // 获取用户完整信息（包括测评次数）
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.redirect('/user/login?error=用户不存在');
+    }
 
     // 获取最近的测评报告
     const recentReports = await Report.find({ user: userId })
@@ -134,7 +143,9 @@ router.get('/dashboard', async (req, res) => {
     const userStats = {
       completedSurveys: await Report.countDocuments({ user: userId }),
       totalStrategies: latestReport ? (latestReport.strategies ? latestReport.strategies.length : 0) : 0,
-      latestStyle: latestReport ? latestReport.learningTypeCode : null
+      latestStyle: latestReport ? latestReport.learningTypeCode : null,
+      testCount: user.testCount,
+      totalTests: user.testHistory.length
     };
 
     // 学习风格描述
@@ -153,6 +164,7 @@ router.get('/dashboard', async (req, res) => {
     res.render('dashboard', {
       title: '个人中心',
       user: req.session.user,
+      userModel: user,
       recentReports,
       latestReport,
       userStats,

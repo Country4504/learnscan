@@ -12,7 +12,13 @@
         <hr>
         
         <div class="d-grid gap-2">
-          <a href="/survey/start" class="btn btn-primary">开始新测评</a>
+          <% if (userStats && userStats.testCount > 0) { %>
+            <a href="/survey/start" class="btn btn-primary">开始新测评</a>
+            <small class="text-muted">剩余测评次数：<span class="badge bg-primary"><%= userStats.testCount %></span></small>
+          <% } else { %>
+            <button class="btn btn-secondary" disabled>测评次数已用完</button>
+            <small class="text-muted">如需增加次数，请联系管理员</small>
+          <% } %>
           <a href="/user/profile" class="btn btn-outline-secondary">编辑个人资料</a>
         </div>
       </div>
@@ -34,7 +40,19 @@
             </div>
             <div class="col-6">
               <div class="border rounded p-3">
-                <h5 class="h2 mb-0 text-success"><%= userStats.totalStrategies || 0 %></h5>
+                <h5 class="h2 mb-0 <%= userStats.testCount > 0 ? 'text-success' : 'text-danger' %>"><%= userStats.testCount || 0 %></h5>
+                <small class="text-muted">剩余次数</small>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="border rounded p-3">
+                <h5 class="h2 mb-0 text-info"><%= userStats.totalTests || 0 %></h5>
+                <small class="text-muted">总测评数</small>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="border rounded p-3">
+                <h5 class="h2 mb-0 text-warning"><%= userStats.totalStrategies || 0 %></h5>
                 <small class="text-muted">学习策略</small>
               </div>
             </div>
