@@ -178,13 +178,6 @@
     <div class="report-section">
       <div class="d-flex justify-content-between align-items-center mb-4">
         <h3 class="report-heading mb-0">维度详细分析</h3>
-        <% if (!hasAIAdvice) { %>
-        <div class="d-flex align-items-center">
-          <button id="generateAllAdviceBtn" class="btn btn-primary btn-sm">
-            <i class="fas fa-magic me-1"></i> 生成AI建议
-          </button>
-        </div>
-        <% } %>
       </div>
       
       <div id="adviceError" class="alert alert-danger d-none mb-4">
@@ -192,6 +185,41 @@
         <span id="errorMessage">生成建议时出错</span>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
       </div>
+      
+      <!-- 如果没有AI建议，显示生成按钮 -->
+      <% if (!hasAIAdvice) { %>
+        <div id="generateAdviceSection" class="text-center py-5">
+          <div class="card border-primary">
+            <div class="card-body py-5">
+              <i class="fas fa-robot text-primary mb-3" style="font-size: 3rem;"></i>
+              <h4 class="text-primary mb-3">AI个性化家长指导建议</h4>
+              <p class="text-muted mb-4">基于您孩子的学习风格测评结果，我们的AI系统将为您生成详细、专业的家长指导建议，包含以下内容：</p>
+              <div class="row text-start">
+                <div class="col-md-6">
+                  <ul class="list-unstyled">
+                    <li><i class="fas fa-check text-success me-2"></i>感知偏好分析与指导</li>
+                    <li><i class="fas fa-check text-success me-2"></i>信息处理方式建议</li>
+                    <li><i class="fas fa-check text-success me-2"></i>学习环境优化方案</li>
+                  </ul>
+                </div>
+                <div class="col-md-6">
+                  <ul class="list-unstyled">
+                    <li><i class="fas fa-check text-success me-2"></i>思维模式培养策略</li>
+                    <li><i class="fas fa-check text-success me-2"></i>时间管理训练方法</li>
+                    <li><i class="fas fa-check text-success me-2"></i>综合发展规划建议</li>
+                  </ul>
+                </div>
+              </div>
+              <button id="generateAllAdviceBtn" class="btn btn-primary btn-lg mt-3">
+                <i class="fas fa-magic me-2"></i>生成AI建议
+              </button>
+            </div>
+          </div>
+        </div>
+      <% } %>
+      
+      <!-- AI建议内容区域（初始隐藏） -->
+      <div id="adviceContentSection" class="<%= hasAIAdvice ? '' : 'd-none' %>">
       <div class="row g-4">
         <div class="col-md-6">
           <div class="card h-100">
@@ -217,20 +245,29 @@
               <!-- 家长建议内容 -->
               <div class="parent-advice-content processing-advice mt-3">
                 <div class="p-3 bg-light rounded">
-                  <h6 class="mb-2"><i class="fas fa-user-graduate text-primary me-2"></i>培养建议</h6>
-                  <p class="advice-cultivation small"></p>
+                  <h6 class="mb-2"><i class="fas fa-search text-primary me-2"></i>核心特征分析</h6>
+                  <p class="advice-analysis small mb-3"></p>
                   
-                  <h6 class="mb-2"><i class="fas fa-book text-primary me-2"></i>学习建议</h6>
-                  <p class="advice-learning small"></p>
+                  <h6 class="mb-2"><i class="fas fa-book-open text-primary me-2"></i>学习方法指导</h6>
+                  <p class="advice-learning-guide small mb-3"></p>
                   
-                  <h6 class="mb-2"><i class="fas fa-home text-primary me-2"></i>家庭活动建议</h6>
-                  <p class="advice-activities small"></p>
+                  <h6 class="mb-2"><i class="fas fa-hands-helping text-primary me-2"></i>家长支持策略</h6>
+                  <p class="advice-parent-support small mb-3"></p>
                   
-                  <h6 class="mb-2"><i class="fas fa-heart text-primary me-2"></i>家庭关系建议</h6>
-                  <p class="advice-relationship small"></p>
+                  <h6 class="mb-2"><i class="fas fa-home text-primary me-2"></i>环境创设建议</h6>
+                  <p class="advice-environment-setup small mb-3"></p>
                   
-                  <h6 class="mb-2"><i class="fas fa-comments text-primary me-2"></i>沟通建议</h6>
-                  <p class="advice-communication small"></p>
+                  <h6 class="mb-2"><i class="fas fa-chart-line text-primary me-2"></i>能力发展规划</h6>
+                  <p class="advice-development-plan small mb-3"></p>
+                  
+                  <h6 class="mb-2"><i class="fas fa-comments text-primary me-2"></i>沟通技巧指导</h6>
+                  <p class="advice-communication small mb-3"></p>
+                  
+                  <h6 class="mb-2"><i class="fas fa-exclamation-triangle text-warning me-2"></i>常见问题应对</h6>
+                  <p class="advice-problem-solving small mb-3"></p>
+                  
+                  <h6 class="mb-2"><i class="fas fa-telescope text-primary me-2"></i>长期发展建议</h6>
+                  <p class="advice-long-term small"></p>
                 </div>
               </div>
             </div>
@@ -261,20 +298,29 @@
               <!-- 家长建议内容 -->
               <div class="parent-advice-content environment-advice mt-3">
                 <div class="p-3 bg-light rounded">
-                  <h6 class="mb-2"><i class="fas fa-user-graduate text-primary me-2"></i>培养建议</h6>
-                  <p class="advice-cultivation small"></p>
+                  <h6 class="mb-2"><i class="fas fa-search text-primary me-2"></i>核心特征分析</h6>
+                  <p class="advice-analysis small mb-3"></p>
                   
-                  <h6 class="mb-2"><i class="fas fa-book text-primary me-2"></i>学习建议</h6>
-                  <p class="advice-learning small"></p>
+                  <h6 class="mb-2"><i class="fas fa-book-open text-primary me-2"></i>学习方法指导</h6>
+                  <p class="advice-learning-guide small mb-3"></p>
                   
-                  <h6 class="mb-2"><i class="fas fa-home text-primary me-2"></i>家庭活动建议</h6>
-                  <p class="advice-activities small"></p>
+                  <h6 class="mb-2"><i class="fas fa-hands-helping text-primary me-2"></i>家长支持策略</h6>
+                  <p class="advice-parent-support small mb-3"></p>
                   
-                  <h6 class="mb-2"><i class="fas fa-heart text-primary me-2"></i>家庭关系建议</h6>
-                  <p class="advice-relationship small"></p>
+                  <h6 class="mb-2"><i class="fas fa-home text-primary me-2"></i>环境创设建议</h6>
+                  <p class="advice-environment-setup small mb-3"></p>
                   
-                  <h6 class="mb-2"><i class="fas fa-comments text-primary me-2"></i>沟通建议</h6>
-                  <p class="advice-communication small"></p>
+                  <h6 class="mb-2"><i class="fas fa-chart-line text-primary me-2"></i>能力发展规划</h6>
+                  <p class="advice-development-plan small mb-3"></p>
+                  
+                  <h6 class="mb-2"><i class="fas fa-comments text-primary me-2"></i>沟通技巧指导</h6>
+                  <p class="advice-communication small mb-3"></p>
+                  
+                  <h6 class="mb-2"><i class="fas fa-exclamation-triangle text-warning me-2"></i>常见问题应对</h6>
+                  <p class="advice-problem-solving small mb-3"></p>
+                  
+                  <h6 class="mb-2"><i class="fas fa-telescope text-primary me-2"></i>长期发展建议</h6>
+                  <p class="advice-long-term small"></p>
                 </div>
               </div>
             </div>
@@ -305,20 +351,29 @@
               <!-- 家长建议内容 -->
               <div class="parent-advice-content thinking-advice mt-3">
                 <div class="p-3 bg-light rounded">
-                  <h6 class="mb-2"><i class="fas fa-user-graduate text-primary me-2"></i>培养建议</h6>
-                  <p class="advice-cultivation small"></p>
+                  <h6 class="mb-2"><i class="fas fa-search text-primary me-2"></i>核心特征分析</h6>
+                  <p class="advice-analysis small mb-3"></p>
                   
-                  <h6 class="mb-2"><i class="fas fa-book text-primary me-2"></i>学习建议</h6>
-                  <p class="advice-learning small"></p>
+                  <h6 class="mb-2"><i class="fas fa-book-open text-primary me-2"></i>学习方法指导</h6>
+                  <p class="advice-learning-guide small mb-3"></p>
                   
-                  <h6 class="mb-2"><i class="fas fa-home text-primary me-2"></i>家庭活动建议</h6>
-                  <p class="advice-activities small"></p>
+                  <h6 class="mb-2"><i class="fas fa-hands-helping text-primary me-2"></i>家长支持策略</h6>
+                  <p class="advice-parent-support small mb-3"></p>
                   
-                  <h6 class="mb-2"><i class="fas fa-heart text-primary me-2"></i>家庭关系建议</h6>
-                  <p class="advice-relationship small"></p>
+                  <h6 class="mb-2"><i class="fas fa-home text-primary me-2"></i>环境创设建议</h6>
+                  <p class="advice-environment-setup small mb-3"></p>
                   
-                  <h6 class="mb-2"><i class="fas fa-comments text-primary me-2"></i>沟通建议</h6>
-                  <p class="advice-communication small"></p>
+                  <h6 class="mb-2"><i class="fas fa-chart-line text-primary me-2"></i>能力发展规划</h6>
+                  <p class="advice-development-plan small mb-3"></p>
+                  
+                  <h6 class="mb-2"><i class="fas fa-comments text-primary me-2"></i>沟通技巧指导</h6>
+                  <p class="advice-communication small mb-3"></p>
+                  
+                  <h6 class="mb-2"><i class="fas fa-exclamation-triangle text-warning me-2"></i>常见问题应对</h6>
+                  <p class="advice-problem-solving small mb-3"></p>
+                  
+                  <h6 class="mb-2"><i class="fas fa-telescope text-primary me-2"></i>长期发展建议</h6>
+                  <p class="advice-long-term small"></p>
                 </div>
               </div>
             </div>
@@ -349,20 +404,29 @@
               <!-- 家长建议内容 -->
               <div class="parent-advice-content timeManagement-advice mt-3">
                 <div class="p-3 bg-light rounded">
-                  <h6 class="mb-2"><i class="fas fa-user-graduate text-primary me-2"></i>培养建议</h6>
-                  <p class="advice-cultivation small"></p>
+                  <h6 class="mb-2"><i class="fas fa-search text-primary me-2"></i>核心特征分析</h6>
+                  <p class="advice-analysis small mb-3"></p>
                   
-                  <h6 class="mb-2"><i class="fas fa-book text-primary me-2"></i>学习建议</h6>
-                  <p class="advice-learning small"></p>
+                  <h6 class="mb-2"><i class="fas fa-book-open text-primary me-2"></i>学习方法指导</h6>
+                  <p class="advice-learning-guide small mb-3"></p>
                   
-                  <h6 class="mb-2"><i class="fas fa-home text-primary me-2"></i>家庭活动建议</h6>
-                  <p class="advice-activities small"></p>
+                  <h6 class="mb-2"><i class="fas fa-hands-helping text-primary me-2"></i>家长支持策略</h6>
+                  <p class="advice-parent-support small mb-3"></p>
                   
-                  <h6 class="mb-2"><i class="fas fa-heart text-primary me-2"></i>家庭关系建议</h6>
-                  <p class="advice-relationship small"></p>
+                  <h6 class="mb-2"><i class="fas fa-home text-primary me-2"></i>环境创设建议</h6>
+                  <p class="advice-environment-setup small mb-3"></p>
                   
-                  <h6 class="mb-2"><i class="fas fa-comments text-primary me-2"></i>沟通建议</h6>
-                  <p class="advice-communication small"></p>
+                  <h6 class="mb-2"><i class="fas fa-chart-line text-primary me-2"></i>能力发展规划</h6>
+                  <p class="advice-development-plan small mb-3"></p>
+                  
+                  <h6 class="mb-2"><i class="fas fa-comments text-primary me-2"></i>沟通技巧指导</h6>
+                  <p class="advice-communication small mb-3"></p>
+                  
+                  <h6 class="mb-2"><i class="fas fa-exclamation-triangle text-warning me-2"></i>常见问题应对</h6>
+                  <p class="advice-problem-solving small mb-3"></p>
+                  
+                  <h6 class="mb-2"><i class="fas fa-telescope text-primary me-2"></i>长期发展建议</h6>
+                  <p class="advice-long-term small"></p>
                 </div>
               </div>
             </div>
@@ -386,20 +450,70 @@
               <!-- 家长建议内容 -->
               <div class="parent-advice-content perception-advice mt-3">
                 <div class="p-3 bg-light rounded">
-                  <h6 class="mb-2"><i class="fas fa-user-graduate text-primary me-2"></i>培养建议</h6>
-                  <p class="advice-cultivation small"></p>
+                  <h6 class="mb-2"><i class="fas fa-search text-primary me-2"></i>核心特征分析</h6>
+                  <p class="advice-analysis small mb-3"></p>
                   
-                  <h6 class="mb-2"><i class="fas fa-book text-primary me-2"></i>学习建议</h6>
-                  <p class="advice-learning small"></p>
+                  <h6 class="mb-2"><i class="fas fa-book-open text-primary me-2"></i>学习方法指导</h6>
+                  <p class="advice-learning-guide small mb-3"></p>
                   
-                  <h6 class="mb-2"><i class="fas fa-home text-primary me-2"></i>家庭活动建议</h6>
-                  <p class="advice-activities small"></p>
+                  <h6 class="mb-2"><i class="fas fa-hands-helping text-primary me-2"></i>家长支持策略</h6>
+                  <p class="advice-parent-support small mb-3"></p>
                   
-                  <h6 class="mb-2"><i class="fas fa-heart text-primary me-2"></i>家庭关系建议</h6>
-                  <p class="advice-relationship small"></p>
+                  <h6 class="mb-2"><i class="fas fa-home text-primary me-2"></i>环境创设建议</h6>
+                  <p class="advice-environment-setup small mb-3"></p>
                   
-                  <h6 class="mb-2"><i class="fas fa-comments text-primary me-2"></i>沟通建议</h6>
-                  <p class="advice-communication small"></p>
+                  <h6 class="mb-2"><i class="fas fa-chart-line text-primary me-2"></i>能力发展规划</h6>
+                  <p class="advice-development-plan small mb-3"></p>
+                  
+                  <h6 class="mb-2"><i class="fas fa-comments text-primary me-2"></i>沟通技巧指导</h6>
+                  <p class="advice-communication small mb-3"></p>
+                  
+                  <h6 class="mb-2"><i class="fas fa-exclamation-triangle text-warning me-2"></i>常见问题应对</h6>
+                  <p class="advice-problem-solving small mb-3"></p>
+                  
+                  <h6 class="mb-2"><i class="fas fa-telescope text-primary me-2"></i>长期发展建议</h6>
+                  <p class="advice-long-term small"></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 综合发展建议 -->
+        <div class="col-md-12 mt-4">
+          <div class="card border-primary">
+            <div class="card-header bg-primary text-white">
+              <h4 class="card-title h5 mb-0"><i class="fas fa-lightbulb me-2"></i>综合发展建议</h4>
+            </div>
+            <div class="card-body">
+              <p class="mb-3">基于您孩子的整体学习风格特点，以下是系统性的综合发展建议：</p>
+              
+              <!-- 综合建议内容 -->
+              <div class="parent-advice-content comprehensive-advice mt-3">
+                <div class="p-3 bg-light rounded">
+                  <h6 class="mb-2"><i class="fas fa-map text-primary me-2"></i>整体学习规划</h6>
+                  <p class="advice-overall-planning small mb-3"></p>
+                  
+                  <h6 class="mb-2"><i class="fas fa-home text-primary me-2"></i>家庭教育策略</h6>
+                  <p class="advice-family-strategy small mb-3"></p>
+                  
+                  <h6 class="mb-2"><i class="fas fa-bullseye text-primary me-2"></i>能力培养重点</h6>
+                  <p class="advice-ability-focus small mb-3"></p>
+                  
+                  <h6 class="mb-2"><i class="fas fa-seedling text-primary me-2"></i>潜能开发方向</h6>
+                  <p class="advice-potential-development small mb-3"></p>
+                  
+                  <h6 class="mb-2"><i class="fas fa-balance-scale text-primary me-2"></i>协调发展指导</h6>
+                  <p class="advice-balanced-development small mb-3"></p>
+                  
+                  <h6 class="mb-2"><i class="fas fa-flag-checkered text-primary me-2"></i>阶段性目标设定</h6>
+                  <p class="advice-goal-setting small mb-3"></p>
+                  
+                  <h6 class="mb-2"><i class="fas fa-handshake text-primary me-2"></i>家校协作建议</h6>
+                  <p class="advice-school-cooperation small mb-3"></p>
+                  
+                  <h6 class="mb-2"><i class="fas fa-chart-bar text-primary me-2"></i>持续监测评估</h6>
+                  <p class="advice-monitoring small"></p>
                 </div>
               </div>
             </div>
@@ -762,22 +876,80 @@
     // 更新建议内容
     function updateAdviceContent(dimension, advice) {
       const container = document.querySelector(`.${dimension}-advice`);
+      if (!container) {
+        console.log(`容器未找到: ${dimension}-advice`);
+        return;
+      }
+
+      console.log(`更新维度: ${dimension}`, advice);
+
+      // 字段映射
+      const fields = [
+        { key: '核心特征分析', class: 'analysis' },
+        { key: '学习方法指导', class: 'learning-guide' },
+        { key: '家长支持策略', class: 'parent-support' },
+        { key: '环境创设建议', class: 'environment-setup' },
+        { key: '能力发展规划', class: 'development-plan' },
+        { key: '沟通技巧指导', class: 'communication' },
+        { key: '常见问题应对', class: 'problem-solving' },
+        { key: '长期发展建议', class: 'long-term' }
+      ];
+
+      // 更新所有字段
+      fields.forEach(field => {
+        const element = container.querySelector(`.advice-${field.class}`);
+        if (element) {
+          const content = advice[field.key] || '暂无建议';
+          // 格式化内容
+          const formattedContent = formatContent(content);
+          element.innerHTML = formattedContent;
+          console.log(`设置 ${field.class}: ${content.substring(0, 50)}...`);
+        }
+      });
+    }
+
+    // 更新综合发展建议内容
+    function updateComprehensiveAdvice(advice) {
+      const container = document.querySelector('.comprehensive-advice');
       if (!container) return;
 
       const fields = [
-        { key: '培养建议', class: 'cultivation' },
-        { key: '学习建议', class: 'learning' },
-        { key: '家庭活动建议', class: 'activities' },
-        { key: '家庭关系建议', class: 'relationship' },
-        { key: '沟通建议', class: 'communication' }
+        { key: '整体学习规划', class: 'overall-planning' },
+        { key: '家庭教育策略', class: 'family-strategy' },
+        { key: '能力培养重点', class: 'ability-focus' },
+        { key: '潜能开发方向', class: 'potential-development' },
+        { key: '协调发展指导', class: 'balanced-development' },
+        { key: '阶段性目标设定', class: 'goal-setting' },
+        { key: '家校协作建议', class: 'school-cooperation' },
+        { key: '持续监测评估', class: 'monitoring' }
       ];
 
       fields.forEach(field => {
         const element = container.querySelector(`.advice-${field.class}`);
         if (element) {
-          element.textContent = advice[field.key] || '暂无建议';
+          const content = advice[field.key] || '暂无建议';
+          // 格式化内容
+          const formattedContent = formatContent(content);
+          element.innerHTML = formattedContent;
         }
       });
+    }
+
+    // 格式化内容函数
+    function formatContent(content) {
+      if (!content) return '暂无建议';
+      
+      // 处理数字列表（如：1. xxx 2. xxx）
+      content = content.replace(/(\d+\.\s*[^0-9\n]+)(?=\d+\.|$)/g, '$1\n');
+      
+      // 处理换行符
+      content = content.replace(/\n/g, '<br>');
+      
+      // 处理可能的markdown格式
+      content = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      content = content.replace(/\*(.*?)\*/g, '<em>$1</em>');
+      
+      return content;
     }
 
     // 检查并显示已存在的建议
@@ -807,6 +979,21 @@
               if (parentAdvice[dimensionName]) {
                 updateAdviceContent(dimensionKey, parentAdvice[dimensionName]);
               }
+            }
+            
+            // 更新综合发展建议
+            if (parentAdvice['综合发展建议']) {
+              updateComprehensiveAdvice(parentAdvice['综合发展建议']);
+            }
+            
+            // 显示建议内容区域，隐藏生成按钮区域
+            const generateSection = document.getElementById('generateAdviceSection');
+            const contentSection = document.getElementById('adviceContentSection');
+            if (generateSection) {
+              generateSection.classList.add('d-none');
+            }
+            if (contentSection) {
+              contentSection.classList.remove('d-none');
             }
           }
         } catch (error) {
@@ -851,6 +1038,20 @@
           }
         }
         
+        // 更新综合发展建议
+        if (parentAdvice['综合发展建议']) {
+          updateComprehensiveAdvice(parentAdvice['综合发展建议']);
+        }
+        
+        // 显示建议内容区域，隐藏生成按钮区域
+        const generateSection = document.getElementById('generateAdviceSection');
+        const contentSection = document.getElementById('adviceContentSection');
+        if (generateSection) {
+          generateSection.classList.add('d-none');
+        }
+        if (contentSection) {
+          contentSection.classList.remove('d-none');
+        }
       } catch (error) {
         console.error('生成建议时出错:', error);
         showError(error.message || '生成建议时出错，请稍后重试');
