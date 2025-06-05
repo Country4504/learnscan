@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const User = require('../src/models/User');
 require('dotenv').config();
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://root:password@mongodb:27016/learning_scan?authSource=admin';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://root:password@mongodb:27017/learning_scan?authSource=admin';
 
 async function initTestCount() {
   try {

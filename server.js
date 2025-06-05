@@ -71,7 +71,7 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   store: MongoStore.create({
-    mongoUrl: process.env.MONGODB_URI || 'mongodb://root:password@mongodb:27016/learning_scan?authSource=admin',
+    mongoUrl: process.env.MONGODB_URI || 'mongodb://root:password@mongodb:27017/learning_scan?authSource=admin',
     ttl: 14 * 24 * 60 * 60 // 14天
   }),
   cookie: { maxAge: 14 * 24 * 60 * 60 * 1000 } // 14天
@@ -91,7 +91,7 @@ app.use('/user', userRoutes);
 app.use('/admin', adminRoutes);
 
 // 连接数据库
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://root:password@mongodb:27016/learning_scan?authSource=admin', {
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://root:password@mongodb:27017/learning_scan?authSource=admin', {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })

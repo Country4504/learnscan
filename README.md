@@ -8,6 +8,7 @@ LearnScan是一个面向10-16岁青少年的科学化学习风格诊断与学习
 - **个性化诊断报告**：自动生成详细的分析报告，包含学习风格类型、优势和挑战
 - **学习策略推荐**：提供匹配学习风格的具体学习方法建议，包括通用策略和学科特定策略
 - **历史记录追踪**：保存历次测评结果，观察学习风格的变化和发展
+- **AI 智能建议**：基于先进的语言模型，提供个性化的学习建议和指导
 
 ## 技术架构
 
@@ -16,6 +17,8 @@ LearnScan是一个面向10-16岁青少年的科学化学习风格诊断与学习
 - **数据库**：MongoDB
 - **模板引擎**：EJS
 - **认证**：Express-session, Bcrypt
+- **AI 集成**：OpenAI API
+- **部署**：Docker, Nginx
 
 ## 项目结构
 
@@ -31,8 +34,12 @@ LearnScan/
 │   ├── controllers/    # 控制器
 │   ├── models/         # 数据模型
 │   ├── views/          # 视图模板
-│   └── utils/          # 工具函数
+│   ├── utils/          # 工具函数
+│   ├── middleware/     # 中间件
+│   └── config/         # 配置文件
 │
+├── tests/              # 测试文件
+├── docker/             # Docker 配置
 ├── server.js           # 服务器入口文件
 ├── package.json        # 项目依赖
 └── README.md           # 项目说明
@@ -40,20 +47,14 @@ LearnScan/
 
 ## 安装和运行
 
-1. 克隆项目
 
-```bash
-git clone https://github.com/yourusername/learnscan.git
-cd learnscan
-```
-
-2. 安装依赖
+1. 安装依赖
 
 ```bash
 npm install
 ```
 
-3. 配置环境变量
+2. 配置环境变量
 
 创建 `.env` 文件并设置以下变量：
 
@@ -62,13 +63,20 @@ PORT=3000
 MONGODB_URI=mongodb://localhost:27017/learnscan
 SESSION_SECRET=yoursecretkey
 NODE_ENV=development
+OPENAI_API_KEY=your_openai_api_key
 ```
 
-4. 启动服务器
+3. 启动服务器
 
 ```bash
 npm run dev  # 开发模式
 npm start    # 生产模式
+```
+
+4. 使用 Docker 运行（可选）
+
+```bash
+docker-compose up -d
 ```
 
 5. 访问应用
@@ -91,7 +99,4 @@ npm start    # 生产模式
 - 家长了解孩子学习特点，提供针对性指导
 - 教师根据学生学习风格调整教学方法
 - 教育机构提供个性化学习咨询服务
-
-## 许可证
-
-本项目采用 MIT 许可证 
+- 心理咨询师进行学习能力评估

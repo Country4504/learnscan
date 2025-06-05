@@ -5,7 +5,7 @@ require('dotenv').config();
 async function createAdmin() {
   try {
     // 连接数据库
-    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://root:password@localhost:27016/learning_scan?authSource=admin', {
+    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://root:password@localhost:27017/learning_scan?authSource=admin', {
       useNewUrlParser: true,
       useUnifiedTopology: true
     });

@@ -29,7 +29,7 @@ if (!OPENAI_API_KEY) {
 async function generateParentAdvice(report) {
   if (!OPENAI_API_KEY) {
     console.warn('API密钥未配置，返回默认建议');
-    return getDefaultAdvice();
+    return getDefaultAdvice(report);
   }
 
   const maxRetries = 3;
@@ -116,7 +116,7 @@ async function generateParentAdvice(report) {
       // 如果是最后一次重试，返回默认建议
       if (retryCount === maxRetries - 1) {
         console.warn(`已达到最大重试次数(${maxRetries})，返回默认建议`);
-        return getDefaultAdvice();
+        return getDefaultAdvice(report);
       }
       
       // 计算退避时间
@@ -130,7 +130,7 @@ async function generateParentAdvice(report) {
 
   // 如果所有重试都失败，返回默认建议
   console.error('所有重试都失败，最后一个错误:', lastError);
-  return getDefaultAdvice();
+  return getDefaultAdvice(report);
 }
 
 /**
@@ -383,66 +383,83 @@ function parseAdvice(content) {
  * @returns {Object} - 默认建议
  */
 function getDefaultAdvice(report) {
+  // 获取各维度的得分
+  const perceptionScores = report.scores.perception;
+  const processingScores = report.scores.processing;
+  const environmentScores = report.scores.environment;
+  const thinkingScores = report.scores.thinking;
+  const timeManagementScores = report.scores.timeManagement;
+
+  // 获取主导类型
+  const dominantTypes = report.dominantType;
+
+  // 根据得分生成特征描述
+  const getFeatureDescription = (score, type) => {
+    if (score >= 60) return `表现出强烈的${type}倾向`;
+    if (score >= 40) return `表现出中等程度的${type}倾向`;
+    return `表现出较弱的${type}倾向`;
+  };
+
   return {
     "感知偏好": {
-      "核心特征分析": "很抱歉，AI建议生成服务暂时不可用。您的孩子的感知偏好特点需要基于具体测评结果进行专业分析。请稍后重试或联系技术支持获取个性化的感知偏好分析报告。",
-      "学习方法指导": "建议结合多种感官学习方式，包括视觉材料（图表、图像）、听觉材料（录音、讲解）和动手实践。根据孩子的主导感知类型，重点加强相应方面的学习方法运用。",
-      "家长支持策略": "观察并记录孩子在不同感知学习方式下的表现，积极配合学校教育，为孩子提供多样化的学习材料和体验机会。",
-      "环境创设建议": "创造富有视觉、听觉和触觉刺激的学习环境，准备相应的学习工具和材料，确保学习空间能够满足多样化的感知需求。",
-      "能力发展规划": "在发挥孩子主导感知优势的同时，适度发展其他感知能力，促进多元感知能力的协调发展。",
-      "沟通技巧指导": "采用适合孩子感知偏好的沟通方式，如使用图示、声音变化或肢体语言来增强沟通效果。",
-      "常见问题应对": "如果孩子在某种感知方式下学习困难，不要强迫，而应该灵活调整学习方式，寻找最适合的感知学习途径。",
-      "长期发展建议": "定期评估孩子的感知偏好变化，随着年龄增长适时调整学习策略，培养综合感知能力。"
+      "核心特征分析": `您的孩子${getFeatureDescription(perceptionScores.visual, '视觉型学习')}，${getFeatureDescription(perceptionScores.auditory, '听觉型学习')}，${getFeatureDescription(perceptionScores.kinesthetic, '动觉型学习')}。主导感知类型为${dominantTypes.perceptionType}，这反映了孩子获取信息的主要方式。`,
+      "学习方法指导": `建议根据${dominantTypes.perceptionType}的特点，重点采用相应的学习方法。同时，适当结合其他感知方式，促进多元感知能力的发展。`,
+      "家长支持策略": `观察并记录孩子在${dominantTypes.perceptionType}学习方式下的表现，提供相应的学习材料和环境支持。`,
+      "环境创设建议": `根据${dominantTypes.perceptionType}的特点，创造适合的学习环境，准备相应的学习工具和材料。`,
+      "能力发展规划": `在发挥${dominantTypes.perceptionType}优势的同时，逐步培养其他感知能力，实现感知能力的均衡发展。`,
+      "沟通技巧指导": `采用适合${dominantTypes.perceptionType}特点的沟通方式，提高沟通效果。`,
+      "常见问题应对": `当孩子在${dominantTypes.perceptionType}学习方式下遇到困难时，灵活调整学习策略，寻找最适合的解决方案。`,
+      "长期发展建议": `定期评估孩子的感知偏好变化，适时调整学习策略，培养综合感知能力。`
     },
     "信息处理方式": {
-      "核心特征分析": "当前无法提供基于测评结果的个性化信息处理特征分析。建议联系技术支持获取专业的信息处理方式评估报告。",
-      "学习方法指导": "提供系统性和整体性两种学习方法，让孩子根据学习内容特点选择合适的信息处理方式，培养灵活的学习策略。",
-      "家长支持策略": "理解孩子的信息处理特点，在辅导学习时采用相应的指导方式，避免与孩子的自然处理方式产生冲突。",
-      "环境创设建议": "根据孩子的信息处理偏好，创造有序或灵活的学习环境，提供适合的学习工具和组织方式。",
-      "能力发展规划": "在强化主导信息处理能力的基础上，逐步培养另一种处理方式，提高信息处理的灵活性和全面性。",
-      "沟通技巧指导": "根据孩子的信息处理特点调整说话方式，系统性处理者需要逐步说明，整体性处理者需要先给出框架。",
-      "常见问题应对": "当孩子对信息处理感到困惑时，尝试用不同的方式重新组织和呈现信息，找到最有效的处理路径。",
-      "长期发展建议": "培养孩子在不同情境下灵活选择信息处理方式的能力，提高学习效率和适应性。"
+      "核心特征分析": `您的孩子${getFeatureDescription(processingScores.systematic, '系统性处理')}，${getFeatureDescription(processingScores.global, '跳跃性处理')}。主导处理方式为${dominantTypes.processingType}，这反映了孩子处理信息的主要特点。`,
+      "学习方法指导": `根据${dominantTypes.processingType}的特点，提供相应的学习方法指导，培养灵活的信息处理能力。`,
+      "家长支持策略": `理解并尊重孩子的${dominantTypes.processingType}特点，在辅导学习时采用相应的指导方式。`,
+      "环境创设建议": `根据${dominantTypes.processingType}的特点，创造适合的学习环境，提供相应的学习工具和组织方式。`,
+      "能力发展规划": `在强化${dominantTypes.processingType}能力的基础上，逐步培养另一种处理方式，提高信息处理的灵活性。`,
+      "沟通技巧指导": `根据${dominantTypes.processingType}特点调整沟通方式，提高沟通效果。`,
+      "常见问题应对": `当孩子的处理方式与任务要求不匹配时，帮助其学会灵活切换处理策略。`,
+      "长期发展建议": `培养孩子在不同情境下灵活选择信息处理方式的能力，提高学习效率和适应性。`
     },
     "学习环境偏好": {
-      "核心特征分析": "由于AI服务暂时不可用，无法提供基于测评结果的具体环境偏好分析。请稍后重试或寻求专业支持。",
-      "学习方法指导": "为孩子提供多样化的学习环境选择，观察在不同环境下的学习效果，找到最适合的学习环境设置。",
-      "家长支持策略": "尊重孩子的环境偏好，在可能的范围内调整家庭学习环境，同时培养孩子对不同环境的适应能力。",
-      "环境创设建议": "根据孩子的环境偏好特点，合理安排学习空间的布局、光线、声音等要素，创造最佳学习环境。",
-      "能力发展规划": "在满足主导环境偏好的同时，逐步培养孩子在其他环境下的学习能力，提高环境适应性。",
-      "沟通技巧指导": "选择适合的环境进行重要沟通，考虑环境因素对沟通效果的影响。",
-      "常见问题应对": "如果无法完全满足孩子的理想学习环境，教会孩子如何在现有条件下创造最佳学习状态。",
-      "长期发展建议": "逐步培养孩子在各种环境下都能有效学习的能力，增强适应性和灵活性。"
+      "核心特征分析": `您的孩子${getFeatureDescription(environmentScores.structured, '结构化环境')}，${getFeatureDescription(environmentScores.flexible, '灵活环境')}。主导环境偏好为${dominantTypes.environmentType}，这反映了孩子对学习环境的偏好。`,
+      "学习方法指导": `根据${dominantTypes.environmentType}的特点，提供相应的学习方法指导，创造最佳学习效果。`,
+      "家长支持策略": `尊重孩子的${dominantTypes.environmentType}偏好，在可能的范围内调整家庭学习环境。`,
+      "环境创设建议": `根据${dominantTypes.environmentType}的特点，合理安排学习空间的布局、光线、声音等要素。`,
+      "能力发展规划": `在满足${dominantTypes.environmentType}偏好的同时，逐步培养在其他环境下的学习能力。`,
+      "沟通技巧指导": `选择适合${dominantTypes.environmentType}特点的环境进行重要沟通。`,
+      "常见问题应对": `当无法完全满足孩子的理想学习环境时，帮助其学会在现有条件下创造最佳学习状态。`,
+      "长期发展建议": `逐步培养孩子在各种环境下都能有效学习的能力，增强环境适应性。`
     },
     "思维模式": {
-      "核心特征分析": "目前无法提供个性化的思维模式分析。建议稍后重试AI建议生成功能，或咨询教育专家获取专业评估。",
-      "学习方法指导": "提供分析性和创造性两种思维训练，根据学习内容特点灵活运用不同的思维方式，促进思维能力全面发展。",
-      "家长支持策略": "理解并尊重孩子的思维特点，在日常交流中注意培养孩子的思维能力，提供适当的思维挑战。",
-      "环境创设建议": "创造既能支持逻辑分析又能激发创造力的家庭环境，提供相应的学习资源和思维工具。",
-      "能力发展规划": "在发展主导思维优势的同时，注意培养另一种思维能力，实现思维能力的均衡发展。",
-      "沟通技巧指导": "根据孩子的思维特点调整沟通方式，分析型思维者需要逻辑性强的对话，创造型思维者需要开放性的讨论。",
-      "常见问题应对": "当孩子的思维方式与任务要求不匹配时，帮助孩子学会灵活切换思维模式，或寻找适合的解决途径。",
-      "长期发展建议": "培养孩子的元认知能力，让其了解自己的思维特点，学会在不同情境下选择合适的思维策略。"
+      "核心特征分析": `您的孩子${getFeatureDescription(thinkingScores.analytical, '分析型思维')}，${getFeatureDescription(thinkingScores.creative, '创造型思维')}。主导思维模式为${dominantTypes.thinkingType}，这反映了孩子的思维特点。`,
+      "学习方法指导": `根据${dominantTypes.thinkingType}的特点，提供相应的学习方法指导，促进思维能力的发展。`,
+      "家长支持策略": `理解并尊重孩子的${dominantTypes.thinkingType}特点，在日常交流中注意培养思维能力。`,
+      "环境创设建议": `创造既能支持${dominantTypes.thinkingType}又能激发另一种思维能力的家庭环境。`,
+      "能力发展规划": `在发展${dominantTypes.thinkingType}优势的同时，注意培养另一种思维能力。`,
+      "沟通技巧指导": `根据${dominantTypes.thinkingType}特点调整沟通方式，提高沟通效果。`,
+      "常见问题应对": `当思维方式与任务要求不匹配时，帮助孩子学会灵活切换思维模式。`,
+      "长期发展建议": `培养孩子的元认知能力，让其了解自己的思维特点，学会选择合适的思维策略。`
     },
     "时间管理倾向": {
-      "核心特征分析": "由于技术原因，暂无法提供基于测评的个性化时间管理分析。请联系技术支持或稍后重试获取专业建议。",
-      "学习方法指导": "帮助孩子建立适合其时间管理倾向的学习计划，培养良好的时间管理习惯和技能。",
-      "家长支持策略": "理解孩子的时间管理特点，提供适当的指导和支持，避免强加不适合的时间管理方式。",
-      "环境创设建议": "为孩子创造有利于时间管理的环境，提供必要的时间管理工具和提醒系统。",
-      "能力发展规划": "在尊重孩子自然时间管理倾向的基础上，逐步培养更全面的时间管理能力。",
-      "沟通技巧指导": "在时间管理方面与孩子进行有效沟通，共同制定合理的时间安排和目标。",
-      "常见问题应对": "当孩子在时间管理上遇到困难时，提供耐心指导，帮助其找到适合的时间管理策略。",
-      "长期发展建议": "培养孩子的时间意识和自我管理能力，为其未来的学习和生活打下良好基础。"
+      "核心特征分析": `您的孩子${getFeatureDescription(timeManagementScores.planned, '计划型管理')}，${getFeatureDescription(timeManagementScores.adaptive, '适应型管理')}。主导时间管理倾向为${dominantTypes.timeManagementType}，这反映了孩子的时间管理特点。`,
+      "学习方法指导": `根据${dominantTypes.timeManagementType}的特点，帮助孩子建立适合的学习计划。`,
+      "家长支持策略": `理解并尊重孩子的${dominantTypes.timeManagementType}特点，提供适当的指导和支持。`,
+      "环境创设建议": `根据${dominantTypes.timeManagementType}的特点，创造有利于时间管理的环境。`,
+      "能力发展规划": `在尊重${dominantTypes.timeManagementType}倾向的基础上，逐步培养更全面的时间管理能力。`,
+      "沟通技巧指导": `根据${dominantTypes.timeManagementType}特点，在时间管理方面进行有效沟通。`,
+      "常见问题应对": `当在时间管理上遇到困难时，提供耐心指导，帮助找到适合的时间管理策略。`,
+      "长期发展建议": `培养孩子的时间意识和自我管理能力，为其未来的学习和生活打下基础。`
     },
     "综合发展建议": {
-      "整体学习规划": "由于AI建议生成服务暂时不可用，无法提供基于具体测评结果的个性化学习规划。建议定期重新评估孩子的学习风格，制定阶段性学习目标。",
-      "家庭教育策略": "采用多元化的家庭教育方法，尊重孩子的个性特点，营造支持性的家庭学习环境，促进孩子全面发展。",
-      "能力培养重点": "建议关注孩子的核心学习能力培养，包括自主学习能力、批判性思维、创造力和沟通合作能力。",
-      "潜能开发方向": "观察并发现孩子的兴趣和天赋所在，提供相应的发展机会和资源支持，促进潜能的充分发挥。",
-      "协调发展指导": "注意平衡发展孩子的各项能力，避免偏科或能力发展不均衡，促进全面而个性化的发展。",
-      "阶段性目标设定": "根据孩子的年龄特点和发展水平，设定合理的短期和长期目标，定期评估和调整。",
-      "家校协作建议": "与学校老师保持良好沟通，共享孩子的学习特点信息，协调一致地支持孩子的学习发展。",
-      "持续监测评估": "建议定期观察和评估孩子的学习进展，及时调整教育策略和方法，确保教育效果的持续优化。"
+      "整体学习规划": `基于孩子的学习风格特点（${report.learningTypeCode}），建议制定个性化的学习规划，充分发挥${dominantTypes.perceptionType}、${dominantTypes.processingType}、${dominantTypes.environmentType}、${dominantTypes.thinkingType}和${dominantTypes.timeManagementType}的优势。`,
+      "家庭教育策略": `根据孩子的学习风格特点，采用多元化的家庭教育方法，营造支持性的家庭学习环境。`,
+      "能力培养重点": `重点关注孩子的核心学习能力培养，包括自主学习能力、批判性思维、创造力和沟通合作能力。`,
+      "潜能开发方向": `基于孩子的学习风格特点，发掘和培养其潜在优势，提供相应的发展机会。`,
+      "协调发展指导": `注意平衡发展孩子的各项能力，避免偏科或能力发展不均衡。`,
+      "阶段性目标设定": `根据孩子的年龄特点和发展水平，设定合理的短期和长期目标。`,
+      "家校协作建议": `与学校老师保持良好沟通，共享孩子的学习特点信息，协调一致地支持孩子的学习发展。`,
+      "持续监测评估": `定期观察和评估孩子的学习进展，及时调整教育策略和方法。`
     }
   };
 }
