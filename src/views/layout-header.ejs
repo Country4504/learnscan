@@ -14,12 +14,10 @@
       position: relative;
       z-index: 1030;
     }
-    
     /* 下拉菜单容器样式 */
     .nav-item.dropdown {
       position: relative;
     }
-    
     /* 下拉菜单样式 */
     .dropdown-menu {
       position: absolute;
@@ -39,16 +37,12 @@
       border-radius: 0.25rem;
       box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
     }
-    
-    /* 下拉菜单显示状态 */
     .dropdown-menu.show {
       display: block !important;
       transform: none !important;
       opacity: 1 !important;
       visibility: visible !important;
     }
-    
-    /* 下拉菜单项样式 */
     .dropdown-item {
       display: block;
       width: 100%;
@@ -62,30 +56,22 @@
       background-color: transparent;
       border: 0;
     }
-    
-    /* 下拉菜单项悬停效果 */
     .dropdown-item:hover,
     .dropdown-item:focus {
       color: #1e2125;
       background-color: #f8f9fa;
       text-decoration: none;
     }
-    
-    /* 下拉菜单分隔线 */
     .dropdown-divider {
       height: 0;
       margin: 0.5rem 0;
       overflow: hidden;
       border-top: 1px solid #e9ecef;
     }
-    
-    /* 确保下拉菜单右对齐 */
     .dropdown-menu-end {
       right: 0 !important;
       left: auto !important;
     }
-    
-    /* 移动端适配 */
     @media (max-width: 768px) {
       .dropdown-menu {
         position: static;
@@ -98,7 +84,7 @@
       }
     }
   </style>
-  <%- style %>
+  <%- typeof style !== 'undefined' ? style : '' %>
 </head>
 <body>
   <!-- 导航栏 -->
@@ -148,76 +134,5 @@
       </div>
     </div>
   </nav>
-
   <!-- 主内容区 -->
-  <main class="container py-4">
-    <%- body %>
-  </main>
-
-  <!-- 页脚 -->
-  <footer class="footer mt-auto py-3 bg-light">
-    <div class="container text-center">
-      <a href="/admin/dashboard" class="text-muted text-decoration-none" style="font-size: 0.9rem;">
-        © 2024 LearnScan 青少年学习风格诊断系统
-      </a>
-    </div>
-  </footer>
-
-  <!-- JavaScript 库 -->
-  <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
-  <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
-  <script src="/js/main.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // 初始化下拉菜单
-      const dropdownToggle = document.getElementById('navbarDropdown');
-      if (dropdownToggle) {
-        const dropdown = new bootstrap.Dropdown(dropdownToggle, {
-          autoClose: true,
-          display: 'dynamic',
-          popperConfig: {
-            strategy: 'fixed',
-            placement: 'bottom-end',
-            modifiers: [
-              {
-                name: 'offset',
-                options: {
-                  offset: [0, 4],
-                },
-              },
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'viewport',
-                  padding: 8
-                },
-              },
-              {
-                name: 'computeStyles',
-                options: {
-                  gpuAcceleration: false
-                },
-              }
-            ],
-          }
-        });
-
-        // 监听下拉菜单显示事件
-        dropdownToggle.addEventListener('shown.bs.dropdown', function() {
-          const dropdownMenu = document.querySelector('.dropdown-menu');
-          if (dropdownMenu) {
-            // 确保下拉菜单在视口内完全可见
-            const viewportHeight = window.innerHeight;
-            const menuRect = dropdownMenu.getBoundingClientRect();
-            if (menuRect.bottom > viewportHeight) {
-              dropdownMenu.style.maxHeight = `${viewportHeight - menuRect.top - 10}px`;
-            }
-          }
-        });
-      }
-    });
-  </script>
-  <%- script %>
-</body>
-</html> 
+  <main class="container py-4"> 

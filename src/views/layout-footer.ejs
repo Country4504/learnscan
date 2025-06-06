@@ -1,0 +1,66 @@
+  </main>
+  <!-- 页脚 -->
+  <footer class="footer mt-auto py-3 bg-light">
+    <div class="container text-center">
+      <a href="/admin/dashboard" class="text-muted text-decoration-none" style="font-size: 0.9rem;">
+        © 2024 LearnScan 青少年学习风格诊断系统
+      </a>
+    </div>
+  </footer>
+  <!-- JavaScript 库 -->
+  <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/chart.min.js"></script>
+  <script src="/js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // 初始化下拉菜单
+      const dropdownToggle = document.getElementById('navbarDropdown');
+      if (dropdownToggle) {
+        const dropdown = new bootstrap.Dropdown(dropdownToggle, {
+          autoClose: true,
+          display: 'dynamic',
+          popperConfig: {
+            strategy: 'fixed',
+            placement: 'bottom-end',
+            modifiers: [
+              {
+                name: 'offset',
+                options: {
+                  offset: [0, 4],
+                },
+              },
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'viewport',
+                  padding: 8
+                },
+              },
+              {
+                name: 'computeStyles',
+                options: {
+                  gpuAcceleration: false
+                },
+              }
+            ],
+          }
+        });
+        // 监听下拉菜单显示事件
+        dropdownToggle.addEventListener('shown.bs.dropdown', function() {
+          const dropdownMenu = document.querySelector('.dropdown-menu');
+          if (dropdownMenu) {
+            // 确保下拉菜单在视口内完全可见
+            const viewportHeight = window.innerHeight;
+            const menuRect = dropdownMenu.getBoundingClientRect();
+            if (menuRect.bottom > viewportHeight) {
+              dropdownMenu.style.maxHeight = `${viewportHeight - menuRect.top - 10}px`;
+            }
+          }
+        });
+      }
+    });
+  </script>
+  <%- typeof script !== 'undefined' ? script : '' %>
+</body>
+</html> 

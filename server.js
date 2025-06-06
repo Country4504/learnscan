@@ -6,7 +6,7 @@ const MongoStore = require('connect-mongo');
 const path = require('path');
 const dotenv = require('dotenv');
 // 添加EJS布局模块
-const expressLayouts = require('express-ejs-layouts');
+// const expressLayouts = require('express-ejs-layouts');
 
 // 加载环境变量
 dotenv.config();
@@ -34,12 +34,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 // 设置视图引擎
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'src/views'));
-
-// 配置EJS布局
-app.use(expressLayouts);
-app.set('layout', 'layout');
-app.set('layout extractScripts', true);
-app.set('layout extractStyles', true);
 
 // 添加全局助手函数
 app.locals.formatTime = function(date) {

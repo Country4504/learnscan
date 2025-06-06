@@ -1,4 +1,4 @@
-<%- contentFor('style') %>
+<%- include('layout-header') %>
 <style>
   .no-count-container {
     min-height: 60vh;
@@ -16,7 +16,6 @@
     margin-bottom: 1rem;
   }
 </style>
-<%- contentFor('style') %>
 
 <div class="no-count-container">
   <div class="card no-count-card">
@@ -41,7 +40,6 @@
   </div>
 </div>
 
-<%- contentFor('script') %>
 <script>
 // 可以添加一些交互效果
 document.addEventListener('DOMContentLoaded', function() {
@@ -57,4 +55,4 @@ document.addEventListener('DOMContentLoaded', function() {
   }, 100);
 });
 </script>
-<%- contentFor('script') %> 
+<%- include('layout-footer') %> 
