@@ -27,8 +27,8 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 // 配置中间件
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true, limit: '20mb' }));
+app.use(bodyParser.json({ limit: '20mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // 设置视图引擎

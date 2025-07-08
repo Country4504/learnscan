@@ -34,9 +34,12 @@ services:
       - NODE_ENV=development
       - PORT=80
       - MONGODB_URI=mongodb://root:password@mongodb:27017/learning_scan?authSource=admin
-      - "OPENAI_API_KEY=sk-8f66f0d6c6dd42569f6b0ba4cc87ddb6"
-      - "OPENAI_API_ENDPOINT=https://api.deepseek.com"
-      - "OPENAI_MODEL=deepseek-chat"
+      - "OPENAI_API_KEY=sk-734acb0969e047aba339b99fdae74a6d"
+      - "OPENAI_API_ENDPOINT=https://dashscope.aliyuncs.com/compatible-mode/v1"
+      - "OPENAI_MODEL=qwen-max"
+      - "OCR_API_KEY=sk-734acb0969e047aba339b99fdae74a6d"
+      - "OCR_API_ENDPOINT=https://dashscope.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation"
+      - "OCR_MODEL=qwen-vl-max"
     volumes:
       - ../src:/usr/src/app/src
       - ../public:/usr/src/app/public

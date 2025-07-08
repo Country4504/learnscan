@@ -1,0 +1,286 @@
+<%- include('../layout-header') %>
+<div class="container py-5">
+  <div class="row mb-4">
+    <div class="col-12 text-center">
+      <h2 class="mb-3 text-primary">智能作业辅导系统</h2>
+      <p class="lead">AI驱动的作业分析与分学科辅导，助力学生独立思考，赋能家长科学辅导。</p>
+    </div>
+  </div>
+  <!-- 题目输入区 -->
+  <div class="row mb-4">
+    <div class="col-md-8 offset-md-2">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">1. 输入你的作业题目</h5>
+          <textarea id="questionText" class="form-control mb-2" rows="3" placeholder="请粘贴或输入题目内容"></textarea>
+          <div class="mb-2">
+            <input type="file" id="imgInput" accept="image/*" capture="environment" style="display:inline-block; width:auto;">
+            <img id="imgPreview" src="" style="max-width:120px;max-height:80px;display:none;margin-left:10px;vertical-align:middle;"/>
+            <span id="ocrStatus" class="text-info small ms-2"></span>
+          </div>
+          <div class="input-group mb-2">
+            <label class="input-group-text" for="subject">学科</label>
+            <select id="subject" class="form-select">
+              <option value="">自动识别</option>
+              <option value="数学">数学</option>
+              <option value="语文">语文</option>
+              <option value="英语">英语</option>
+            </select>
+            <button id="analyzeBtn" class="btn btn-primary" type="button">智能分析</button>
+          </div>
+          <div id="inputError" class="text-danger small"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- 题目分析与分学科辅导区 -->
+  <div class="row mb-4" id="analysisSection" style="display:none;">
+    <div class="col-md-8 offset-md-2">
+      <div class="card border-success shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title text-success">2. 题目分析与分学科辅导</h5>
+          <div id="analysisResult"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- 渐进式思维引导区 -->
+  <div class="row mb-4" id="guidanceSection" style="display:none;">
+    <div class="col-md-8 offset-md-2">
+      <div class="card border-info shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title text-info">3. 渐进式思维引导</h5>
+          <div id="guidanceResult"></div>
+          <button id="nextGuidanceBtn" class="btn btn-outline-info mt-2">下一步引导</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- 家长辅导支持区 -->
+  <div class="row mb-4" id="parentSection" style="display:none;">
+    <div class="col-md-8 offset-md-2">
+      <div class="card border-warning shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title text-warning">4. 家长辅导支持</h5>
+          <div id="parentSupportResult"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<%- include('../layout-footer') %>
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<!-- MathJax配置，支持$...$内联公式 -->
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true,
+    processEnvironments: true,
+    packages: ['base', 'ams', 'noerrors', 'noundefined']
+  },
+  svg: { fontCache: 'global' },
+  startup: {
+    pageReady: () => {
+      console.log('MathJax 已加载完成');
+      return MathJax.startup.defaultPageReady();
+    }
+  },
+  options: {
+    enableMenu: false,
+    menuOptions: {
+      settings: {
+        texHints: true,
+        semantics: false,
+        zoom: 'NoZoom',
+        zscale: '200%'
+      }
+    }
+  }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script>
+let lastQuestion = '';
+let lastSubject = '';
+let currentStep = '';
+let ocrImageBase64 = '';
+
+function renderAnalysis(data) {
+  console.log('renderAnalysis 接收到的数据:', data);
+  
+  let html = `<div><b>学科：</b>${data.学科 || ''}　<b>题型：</b>${data.题型 || ''}　<b>难度：</b>${data.难度 || ''}</div>`;
+  
+  // 处理关键信息
+  if(data.关键信息) {
+    if(Array.isArray(data.关键信息)) {
+      html += `<div class='mt-2'><b>关键信息：</b><ul>`;
+      data.关键信息.forEach(item => {
+        // 直接使用后端返回的格式，不需要额外处理
+        html += `<li>${item}</li>`;
+      });
+      html += `</ul></div>`;
+      console.log('关键信息数组:', data.关键信息);
+    } else if(typeof data.关键信息 === 'object') {
+      html += `<div class='mt-2'><b>关键信息：</b><ul>`;
+      Object.entries(data.关键信息).forEach(([key, value]) => {
+        html += `<li><b>${key}：</b>${value}</li>`;
+      });
+      html += `</ul></div>`;
+    }
+  }
+  
+  // 处理分学科guidance - 修复逻辑
+  if(data['分学科guidance'] && typeof data['分学科guidance'] === 'object') {
+    html += `<div class='mt-3'><b>分学科辅导：</b>`;
+    Object.entries(data['分学科guidance']).forEach(([key, value]) => {
+      if(Array.isArray(value)) {
+        html += `<div class='mt-2'><b>${key}：</b><ul>`;
+        value.forEach(item => {
+          // 直接使用后端返回的格式，不需要额外处理
+          html += `<li>${item}</li>`;
+        });
+        html += `</ul></div>`;
+      } else if(typeof value === 'string' && value.trim() !== '') {
+        // 直接使用后端返回的格式，不需要额外处理
+        html += `<div class='mt-2'><b>${key}：</b>${value}</div>`;
+      }
+    });
+    html += `</div>`;
+  }
+    return html;
+}
+function renderGuidance(data) {
+  console.log('【renderGuidance】data:', data);
+  console.log('【renderGuidance】data.content:', data.content);
+  console.log('【renderGuidance】typeof data.content:', typeof data.content);
+  let content = data.content || '';
+  console.log('【renderGuidance】最终content:', content);
+  const html = `<div><b>${data.step || ''}：</b>${content}</div>`;
+  console.log('【renderGuidance】最终渲染HTML:', html);
+  return html;
+}
+function renderParentSupport(data) {
+  let html = `<div><b>知识点说明：</b>${data.knowledge || ''}</div>`;
+  
+  let solution = data.solution || '';
+  // 直接使用后端返回的格式，不需要额外处理
+  html += `<div class='mt-2'><b>标准解题过程：</b>${solution}</div>`;
+  
+  if(data.errorCommon) html += `<div class='mt-2'><b>常见错误提醒：</b>${data.errorCommon}</div>`;
+  if(data.extension) html += `<div class='mt-2'><b>拓展知识：</b>${data.extension}</div>`;
+  if(data.talk && data.talk.length) html += `<div class='mt-2'><b>提问技巧：</b>${data.talk.join('，')}</div>`;
+  if(data.encourage && data.encourage.length) html += `<div class='mt-2'><b>鼓励用语：</b>${data.encourage.join('，')}</div>`;
+  if(data.correct && data.correct.length) html += `<div class='mt-2'><b>纠错方法：</b>${data.correct.join('，')}</div>`;
+  if(data.interact && data.interact.length) html += `<div class='mt-2'><b>互动建议：</b>${data.interact.join('，')}</div>`;
+  if(data.training && data.training.length) html += `<div class='mt-2'><b>培训建议：</b>${data.training.join('，')}</div>`;
+  // 家长培训模块
+  if(data.trainingConcept || data.subjectFeature || data.psychology || data.problemSolve) {
+    html += `<div class='mt-4 p-3 border rounded bg-light'><b>家长培训模块</b>`;
+    if(data.trainingConcept) html += `<div class='mt-2'><b>辅导理念：</b>${data.trainingConcept}</div>`;
+    if(data.subjectFeature) html += `<div class='mt-2'><b>学科特点：</b>${data.subjectFeature}</div>`;
+    if(data.psychology) html += `<div class='mt-2'><b>心理引导：</b>${data.psychology}</div>`;
+    if(data.problemSolve) html += `<div class='mt-2'><b>问题应对：</b>${data.problemSolve}</div>`;
+    html += `</div>`;
+  }
+  return html;
+}
+function renderMathJax() {
+  if(window.MathJax) {
+    if(MathJax.typesetPromise) {
+      MathJax.typesetPromise().then(() => {
+      }).catch(err => {
+        console.error('MathJax渲染失败:', err);
+      });
+    } else {
+      if(MathJax.typeset) {
+        MathJax.typeset();
+      }
+    }
+  } else {
+    console.log('MathJax对象不存在');
+  }
+}
+$('#analyzeBtn').on('click', function() {
+  const questionText = $('#questionText').val().trim();
+  const subject = $('#subject').val();
+  const imageBase64 = ocrImageBase64 || '';
+  if(!questionText && !imageBase64) {
+    $('#inputError').text('请输入题目内容或上传图片');
+    return;
+  }
+  $('#inputError').text('');
+  $('#analyzeBtn').prop('disabled', true).text('分析中...');
+  $('#analysisSection').hide();
+  $('#guidanceSection').hide();
+  $('#parentSection').hide();
+  $.post('/homework/analyze', { questionText, subject, imageBase64 }, function(data) {
+    lastQuestion = questionText || '[图片题目]';
+    lastSubject = data.subject || subject;
+    currentStep = '';
+    console.log('AI analyzeHomework 返回对象:', data);
+    $('#analysisResult').html(renderAnalysis(data));
+    $('#analysisSection').show();
+    renderMathJax();
+    // 自动请求第一步思维引导
+    getGuidance('题目理解');
+    // 自动请求家长支持
+    getParentSupport();
+  }).fail(function(xhr){
+    $('#analysisResult').html('<span class="text-danger">AI分析失败：'+(xhr.responseJSON?.error||'未知错误')+'</span>');
+    $('#analysisSection').show();
+  }).always(function(){
+    $('#analyzeBtn').prop('disabled', false).text('智能分析');
+  });
+});
+function getGuidance(step) {
+  $('#guidanceResult').html('<span class="text-secondary">正在生成个性化引导...</span>');
+  $('#guidanceSection').show();
+  $.post('/homework/guidance', { 
+    questionText: lastQuestion, 
+    currentStep: step,
+    imageBase64: ocrImageBase64 
+  }, function(data) {
+    console.log('【guidance回调】AI guidance 返回对象:', data);
+    currentStep = data.nextStep || '';
+    const html = renderGuidance(data);
+    console.log('【guidance回调】renderGuidance返回HTML:', html);
+    $('#guidanceResult').html(html);
+    renderMathJax();
+    if(!data.nextStep) $('#nextGuidanceBtn').hide();
+    else $('#nextGuidanceBtn').show();
+  }).fail(function(xhr){
+    $('#guidanceResult').html('<span class="text-danger">AI引导失败：'+(xhr.responseJSON?.error||'未知错误')+'</span>');
+    $('#nextGuidanceBtn').hide();
+  });
+}
+$('#nextGuidanceBtn').on('click', function(){
+  if(currentStep) getGuidance(currentStep);
+});
+function getParentSupport() {
+  $('#parentSupportResult').html('<span class="text-secondary">AI家长支持加载中...</span>');
+  $('#parentSection').show();
+  $.post('/homework/parent-support', { questionText: lastQuestion, subject: lastSubject }, function(data) {
+    $('#parentSupportResult').html(renderParentSupport(data));
+    renderMathJax();
+  }).fail(function(xhr){
+    $('#parentSupportResult').html('<span class="text-danger">AI家长支持失败：'+(xhr.responseJSON?.error||'未知错误')+'</span>');
+  });
+}
+// 图片上传与AI OCR识别
+$('#imgInput').on('change', function(e){
+  const file = e.target.files[0];
+  if(file){
+    const reader = new FileReader();
+    reader.onload = function(ev){
+      ocrImageBase64 = ev.target.result;
+      $('#imgPreview').attr('src', ocrImageBase64).show();
+      $('#ocrStatus').text('');
+    };
+    reader.readAsDataURL(file);
+  }
+});
+$('#ocrBtn').hide();
+$('#ocrStatus').hide();
+</script> 

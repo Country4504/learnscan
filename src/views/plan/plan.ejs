@@ -1,0 +1,205 @@
+<%- include('../layout-header') %>
+<div class="container py-5">
+  <div class="row mb-4">
+    <div class="col-12 text-center">
+      <h2 class="mb-3 text-success">智能学习规划引擎</h2>
+      <p class="lead">基于AI的个性化学习路径设计工具，专为K12学生打造，科学规划，高效提升。</p>
+    </div>
+  </div>
+  <!-- 产品定位 -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <h4 class="mb-3">产品定位</h4>
+      <p>智能学习规划引擎是一款基于AI技术的个性化学习路径设计工具，专为K12阶段学生打造。通过分析学生的学习风格、能力水平、时间安排和学习目标，自动生成科学、可执行的个性化学习计划，并支持动态调整优化。</p>
+    </div>
+  </div>
+  <!-- 核心价值 -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <h4 class="mb-3">核心价值</h4>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item">🎯 <b>个性化定制：</b> 基于每个学生独特的学习特征生成专属学习路径</li>
+        <li class="list-group-item">📚 <b>科学规划：</b> 融入教育心理学和学习科学原理，确保计划的有效性</li>
+        <li class="list-group-item">🤖 <b>智能优化：</b> 根据学习进展自动调整计划，持续优化学习效果</li>
+        <li class="list-group-item">💡 <b>减负增效：</b> 为家长提供专业指导，减轻教育焦虑，提高学习效率</li>
+      </ul>
+    </div>
+  </div>
+  <!-- 主要功能 -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <h4 class="mb-3">主要功能</h4>
+      <ol>
+        <li><b>学习目标智能解析</b>：多维目标设定、可行性评估、目标分解、优先级排序</li>
+        <li><b>个性化学习路径生成</b>：学习风格分析、能力评估、时间资源分析、智能路径算法、学习计划生成</li>
+        <li><b>自适应调整系统</b>：学习进度监控、智能调整机制、预警与干预</li>
+        <li><b>多模式学习支持</b>：冲刺模式、稳步提升模式、补强模式</li>
+        <li><b>家长参与支持</b>：家长端功能、家校协同</li>
+      </ol>
+    </div>
+  </div>
+  <!-- 典型使用场景 -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <h4 class="mb-3">典型使用场景</h4>
+      <ul>
+        <li><b>新学期规划：</b> 输入学期目标和基本情况，系统生成整个学期的学习规划</li>
+        <li><b>考前冲刺：</b> 设定考试目标，生成高效复习计划，重点内容充分复习</li>
+        <li><b>薄弱科目提升：</b> 分析薄弱环节，制定专项提升计划，逐步改善成绩</li>
+        <li><b>学习方法调整：</b> 基于学习数据分析，推荐更适合的学习方法和时间安排</li>
+      </ul>
+    </div>
+  </div>
+  <!-- 技术实现 -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <h4 class="mb-3">技术实现</h4>
+      <ul>
+        <li>机器学习算法：用于学习路径优化和效果预测</li>
+        <li>自然语言处理：用于目标解析和计划生成的文本处理</li>
+        <li>推荐系统：基于协同过滤和内容推荐的学习资源匹配</li>
+        <li>时间序列分析：用于学习进度预测和调整决策</li>
+        <li>多维数据支撑：学习行为、效果、特征、环境等多源数据融合</li>
+        <li>数据隐私保护与内容安全保障</li>
+      </ul>
+    </div>
+  </div>
+  <!-- 后续功能区块 -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <h4 class="mb-3">后续功能区块（开发中）</h4>
+      <div class="alert alert-secondary">更多AI驱动的学习规划与动态调整功能即将上线，敬请期待！</div>
+    </div>
+  </div>
+  <!-- 学习目标智能解析功能区 -->
+  <div class="row mb-5">
+    <div class="col-12">
+      <div class="card border-success shadow-sm">
+        <div class="card-header bg-success text-white">
+          <h4 class="mb-0">1. 学习目标智能解析</h4>
+        </div>
+        <div class="card-body">
+          <!-- 1.1 目标输入与分析 -->
+          <form id="goalForm" class="mb-4">
+            <div class="row g-3 align-items-end">
+              <div class="col-md-4">
+                <label for="goalType" class="form-label">目标类型</label>
+                <select class="form-select" id="goalType" name="goalType" required>
+                  <option value="">请选择</option>
+                  <option value="学期目标">学期目标</option>
+                  <option value="考试目标">考试目标</option>
+                  <option value="能力提升目标">能力提升目标</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label for="goalContent" class="form-label">目标内容</label>
+                <input type="text" class="form-control" id="goalContent" name="goalContent" placeholder="如：本学期语文成绩提升到90分以上" required>
+              </div>
+              <div class="col-md-2">
+                <button type="submit" class="btn btn-success w-100">智能解析</button>
+              </div>
+            </div>
+          </form>
+          <!-- 1.1 目标可行性评估与分解 -->
+          <div id="goalAnalysisResult" style="display:none;">
+            <h5 class="mt-4">目标可行性评估</h5>
+            <div class="alert alert-info" id="goalFeasibility">（此处展示AI评估结果）</div>
+            <h5 class="mt-4">目标分解</h5>
+            <ul class="list-group mb-3" id="goalBreakdown">
+              <!-- 动态插入分解结果 -->
+            </ul>
+          </div>
+          <!-- 1.2 优先级智能排序 -->
+          <div id="goalPriorityResult" style="display:none;">
+            <h5 class="mt-4">优先级智能排序</h5>
+            <ul class="list-group" id="goalPriorityList">
+              <!-- 动态插入排序结果 -->
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- 个性化学习路径生成功能区 -->
+  <div class="row mb-5">
+    <div class="col-12">
+      <div class="card border-primary shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <h4 class="mb-0">2. 个性化学习路径生成</h4>
+        </div>
+        <div class="card-body">
+          <!-- 2.1 基础信息收集 -->
+          <form id="pathInfoForm" class="mb-4">
+            <div class="row g-3 align-items-end">
+              <div class="col-md-3">
+                <label for="styleType" class="form-label">学习风格</label>
+                <select class="form-select" id="styleType" name="styleType" required>
+                  <option value="">请选择</option>
+                  <option value="视觉型">视觉型</option>
+                  <option value="听觉型">听觉型</option>
+                  <option value="动觉型">动觉型</option>
+                  <option value="混合型">混合型</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label for="levelMath" class="form-label">数学能力</label>
+                <select class="form-select" id="levelMath" name="levelMath" required>
+                  <option value="">请选择</option>
+                  <option value="优秀">优秀</option>
+                  <option value="良好">良好</option>
+                  <option value="一般">一般</option>
+                  <option value="待提升">待提升</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label for="levelChinese" class="form-label">语文能力</label>
+                <select class="form-select" id="levelChinese" name="levelChinese" required>
+                  <option value="">请选择</option>
+                  <option value="优秀">优秀</option>
+                  <option value="良好">良好</option>
+                  <option value="一般">一般</option>
+                  <option value="待提升">待提升</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label for="studyTime" class="form-label">每周可用学习时间（小时）</label>
+                <input type="number" class="form-control" id="studyTime" name="studyTime" min="1" max="100" required>
+              </div>
+            </div>
+            <div class="row g-3 mt-3 align-items-end">
+              <div class="col-md-6">
+                <label for="studyPreference" class="form-label">学习偏好（可多选）</label>
+                <select class="form-select" id="studyPreference" name="studyPreference" multiple>
+                  <option value="早晨学习">早晨学习</option>
+                  <option value="晚上学习">晚上学习</option>
+                  <option value="小组讨论">小组讨论</option>
+                  <option value="独立完成">独立完成</option>
+                  <option value="喜欢图表">喜欢图表</option>
+                  <option value="喜欢听讲">喜欢听讲</option>
+                  <option value="喜欢动手">喜欢动手</option>
+                </select>
+                <small class="text-muted">按住Ctrl/Command可多选</small>
+              </div>
+              <div class="col-md-6 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">生成个性化学习路径</button>
+              </div>
+            </div>
+          </form>
+          <!-- 2.2 智能路径算法与多路径方案展示区 -->
+          <div id="pathResult" style="display:none;">
+            <h5 class="mt-4">智能学习路径方案</h5>
+            <div id="pathOptions" class="mb-3">
+              <!-- 动态插入多路径方案卡片 -->
+            </div>
+            <h5 class="mt-4">详细学习计划</h5>
+            <div id="planSchedule">
+              <!-- 动态插入日/周/月计划表 -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="/js/plan-goal.js"></script>
+<%- include('../layout-footer') %> 
