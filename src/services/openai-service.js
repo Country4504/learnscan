@@ -798,7 +798,6 @@ ${subject_template}
 ${exampleJson}
 
 现在请根据以上要求，为学生的问题生成JSON格式的学习指导：`;
-
   const response = await axios.post(
     `${OPENAI_API_ENDPOINT}/chat/completions`,
     {
@@ -808,8 +807,7 @@ ${exampleJson}
         { role: 'user', content: promptTemplate }
       ],
       temperature: 0.5,
-      max_tokens: 2048,
-      response_format: { type: 'json_object' }
+      max_tokens: 2048
     },
     {
       headers: {
@@ -818,6 +816,7 @@ ${exampleJson}
       }
     }
   );
+  
   const content = response.data.choices[0].message.content;
   try {
     const parsed = JSON.parse(content.replace(/```json|```/g, ''));
@@ -907,6 +906,7 @@ ${exampleJson}
  * @returns {Promise<Object>} 分层次引导内容
  */
 async function progressiveGuidance({ imageBase64, questionText, currentStep, user }) {
+  
   if (!OPENAI_API_KEY) {
     return { step: currentStep || '题目理解', content: '（AI未配置，无法引导）', nextStep: '' };
   }
@@ -930,21 +930,18 @@ async function progressiveGuidance({ imageBase64, questionText, currentStep, use
       // 使用多模态API处理图片
       prompt = `你是一位专业的K12作业辅导AI。请针对以下图片题目，按照分层次引导（题目理解→思路启发→方法指导→验证检查），输出当前层级内容。当前层级：${currentStep || '题目理解'}。请返回如下JSON格式：{step: "当前层级", content: "本层引导内容", nextStep: "下一层级"}。学生信息：${user ? (user.grade + '，' + user.age + '岁') : '未知'}`;
       
-      body = {
-        model: OCR_MODEL,
-        input: {
-          messages: [
-            {
-              role: 'user',
-              content: [
-                { image: imageBase64 },
-                { text: prompt }
-              ]
-            }
+    body = {
+      model: OCR_MODEL,
+      messages: [
+        {
+          role: 'user',
+          content: [
+            { type: "text", text: prompt },
+            { type: "image_url", image_url: { url: imageBase64 } }
           ]
-        },
-        response_format: { type: 'json_object' }
-      };
+        }
+      ]
+    };
 
       const response = await axios.post(
         OCR_API_ENDPOINT,
@@ -960,7 +957,7 @@ async function progressiveGuidance({ imageBase64, questionText, currentStep, use
       console.log('\n3. 多模态AI原始返回:');
       console.log('- 完整响应:', JSON.stringify(response.data, null, 2));
 
-      const content = response.data.output?.choices?.[0]?.message?.content?.[0]?.text || '';
+      const content = response.data?.choices?.[0]?.message?.content|| '';
       console.log('\n4. 提取的content:');
       console.log('- 类型:', typeof content);
       console.log('- 内容:', content);
@@ -1119,7 +1116,7 @@ async function progressiveGuidance({ imageBase64, questionText, currentStep, use
  * @param {Object} param0 { questionText, subject }
  * @returns {Promise<Object>} 家长版解析与话术
  */
-async function parentSupport({ questionText, subject }) {
+async function parentSupport({ questionText, subject, imageBase64  }) {
   if (!OPENAI_API_KEY) {
     console.log('家长辅导支持 - API密钥未配置，返回默认值');
     return {
@@ -1138,40 +1135,70 @@ async function parentSupport({ questionText, subject }) {
       problemSolve: ''
     };
   }
+
+    const OCR_API_KEY = process.env.OCR_API_KEY || process.env.OPENAI_API_KEY;
+  const OCR_API_ENDPOINT = process.env.OCR_API_ENDPOINT || 'https://dashscope.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation';
+  const OCR_MODEL = process.env.OCR_MODEL || 'qwen-vl-max';
   
   console.log('\n=== 家长辅导支持 - 开始处理 ===');
   console.log('1. 输入参数:');
   console.log('- 题目内容:', questionText);
   console.log('- 学科:', subject || '自动识别');
-  
-  const prompt = `你是一位专业的K12家庭作业辅导专家。请针对以下题目，为家长输出如下结构化JSON：
-{
-  "knowledge": "知识点说明",
-  "solution": "标准解题过程",
-  "errorCommon": "常见错误提醒",
-  "extension": "拓展知识",
-  "talk": ["提问技巧1", "提问技巧2"],
-  "encourage": ["鼓励用语1", "鼓励用语2"],
-  "correct": ["纠错方法1", "纠错方法2"],
-  "interact": ["互动建议1", "互动建议2"],
-  "training": ["培训建议1", "培训建议2"],
-  "trainingConcept": "辅导理念（传授科学的家庭辅导理念和方法）",
-  "subjectFeature": "学科特点（介绍不同学科的学习特点和辅导要点）",
-  "psychology": "心理引导（教授如何处理孩子的学习情绪和压力）",
-  "problemSolve": "问题应对（提供常见辅导问题的解决方案）"
-}
-题目：${questionText}
-学科：${subject || '自动识别'}
-请严格输出JSON，不要有多余说明。`;
-  
-  console.log('2. 发送API请求...');
-  console.log('- API端点:', OPENAI_API_ENDPOINT);
-  console.log('- 使用模型:', OPENAI_MODEL);
-  
-  try {
-    const response = await axios.post(
-      `${OPENAI_API_ENDPOINT}/chat/completions`,
+
+  try{
+        let prompt = `你是一位专业的K12家庭作业辅导专家。请针对以下题目，为家长输出如下结构化JSON：
       {
+        "knowledge": "知识点说明",
+        "solution": "标准解题过程",
+        "errorCommon": "常见错误提醒",
+        "extension": "拓展知识",
+        "talk": ["提问技巧1", "提问技巧2"],
+        "encourage": ["鼓励用语1", "鼓励用语2"],
+        "correct": ["纠错方法1", "纠错方法2"],
+        "interact": ["互动建议1", "互动建议2"],
+        "training": ["培训建议1", "培训建议2"],
+        "trainingConcept": "辅导理念（传授科学的家庭辅导理念和方法）",
+        "subjectFeature": "学科特点（介绍不同学科的学习特点和辅导要点）",
+        "psychology": "心理引导（教授如何处理孩子的学习情绪和压力）",
+        "problemSolve": "问题应对（提供常见辅导问题的解决方案）"
+      }
+      题目：${questionText}
+      学科：${subject || '自动识别'}
+      请严格输出JSON，不要有多余说明。`;
+
+    let body;
+    let content = '';
+
+    if (imageBase64 && imageBase64.startsWith('data:image/')) {
+      console.log('[parentSupport] 使用多模态模式, 发送OCR API');
+      body = {
+        model: OCR_MODEL,
+        messages: [
+          {
+            role: 'user',
+            content: [
+              { type: "text", text: prompt },
+              { type: "image_url", image_url: { url: imageBase64 } }
+            ]
+          }
+        ]
+      };
+
+      const response = await axios.post(
+        OCR_API_ENDPOINT,
+        body,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${OCR_API_KEY}`
+          }
+        }
+      );
+
+      content = response.data?.choices?.[0]?.message?.content || '';
+    } else{
+
+      body = {
         model: OPENAI_MODEL,
         messages: [
           { role: 'system', content: '你是一位专业的K12家庭作业辅导专家，擅长家长赋能。' },
@@ -1180,49 +1207,57 @@ async function parentSupport({ questionText, subject }) {
         temperature: 0.5,
         max_tokens: 2048,
         response_format: { type: 'json_object' }
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${OPENAI_API_KEY}`
+      };
+
+      console.log('2. 发送API请求...');
+      console.log('- API端点:', OPENAI_API_ENDPOINT);
+      console.log('- 使用模型:', OPENAI_MODEL);
+
+      const response = await axios.post(
+        `${OPENAI_API_ENDPOINT}/chat/completions`,
+        body,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${OPENAI_API_KEY}`
+          }
         }
-      }
-    );
-    
-    console.log('3. API请求成功');
-    console.log('- 响应状态:', response.status);
-    
-    const content = response.data.choices[0].message.content;
-    console.log('4. AI返回的原始内容:');
-    console.log('- 内容类型:', typeof content);
-    console.log('- 内容长度:', content.length);
-    console.log('- 原始内容:', content);
-    
-    console.log('5. 开始解析JSON...');
-    const parsedResult = JSON.parse(content.replace(/```json|```/g, ''));
-    console.log('6. JSON解析成功:');
-    console.log('- 解析后的object:', JSON.stringify(parsedResult, null, 2));
-    console.log('- object类型:', typeof parsedResult);
-    console.log('- object键数量:', Object.keys(parsedResult).length);
-    console.log('- 主要字段:', Object.keys(parsedResult));
-    
-    // 检查关键字段是否存在
-    const requiredFields = ['knowledge', 'solution', 'errorCommon', 'extension', 'talk', 'encourage', 'correct', 'interact', 'training', 'trainingConcept', 'subjectFeature', 'psychology', 'problemSolve'];
-    console.log('7. 字段完整性检查:');
-    requiredFields.forEach(field => {
-      const exists = field in parsedResult;
-      const value = parsedResult[field];
-      const type = typeof value;
-      const valueStr = JSON.stringify(value);
-      const displayValue = valueStr.length > 100 ? valueStr.substring(0, 100) + '...' : valueStr;
-      console.log(`- ${field}: ${exists ? '存在' : '缺失'} (类型: ${type}, 值: ${displayValue})`);
-    });
-    
-    console.log('8. 最终返回结果:');
-    console.log('- 返回的完整object:', JSON.stringify(parsedResult, null, 2));
-    console.log('=== 家长辅导支持 - 处理完成 ===\n');
-    
-    return parsedResult;
+      );
+      console.log('3. API请求成功');
+      console.log('- 响应状态:', response.status);
+      content = response.data.choices?.[0]?.message?.content || '';
+    }
+
+      console.log('4. AI返回的原始内容:');
+      console.log('- 内容类型:', typeof content);
+      console.log('- 内容长度:', content.length);
+      console.log('- 原始内容:', content);
+      
+      console.log('5. 开始解析JSON...');
+      const parsedResult = JSON.parse(content.replace(/```json|```/g, ''));
+      console.log('6. JSON解析成功:');
+      console.log('- 解析后的object:', JSON.stringify(parsedResult, null, 2));
+      console.log('- object类型:', typeof parsedResult);
+      console.log('- object键数量:', Object.keys(parsedResult).length);
+      console.log('- 主要字段:', Object.keys(parsedResult));
+      
+      // 检查关键字段是否存在
+      const requiredFields = ['knowledge', 'solution', 'errorCommon', 'extension', 'talk', 'encourage', 'correct', 'interact', 'training', 'trainingConcept', 'subjectFeature', 'psychology', 'problemSolve'];
+      console.log('7. 字段完整性检查:');
+      requiredFields.forEach(field => {
+        const exists = field in parsedResult;
+        const value = parsedResult[field];
+        const type = typeof value;
+        const valueStr = JSON.stringify(value);
+        const displayValue = valueStr.length > 100 ? valueStr.substring(0, 100) + '...' : valueStr;
+        console.log(`- ${field}: ${exists ? '存在' : '缺失'} (类型: ${type}, 值: ${displayValue})`);
+      });
+      
+      console.log('8. 最终返回结果:');
+      console.log('- 返回的完整object:', JSON.stringify(parsedResult, null, 2));
+      console.log('=== 家长辅导支持 - 处理完成 ===\n');
+      
+      return parsedResult;
   } catch (error) {
     console.error('处理过程中发生错误:');
     console.error('- 错误类型:', error.name);
@@ -1257,6 +1292,7 @@ async function parentSupport({ questionText, subject }) {
     
     return fallbackResult;
   }
+
 }
 
 function printImageBase64Short(imageBase64) {
@@ -1336,6 +1372,8 @@ async function ocrImage({ imageBase64 }) {
  */
 async function analyzeHomeworkWithImage({ imageBase64, questionText, subject, user }) {
   const OCR_API_KEY = process.env.OCR_API_KEY || process.env.OPENAI_API_KEY;
+  
+  
   const OCR_API_ENDPOINT = process.env.OCR_API_ENDPOINT || 'https://dashscope.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation';
   const OCR_MODEL = process.env.OCR_MODEL || 'qwen-vl-max';
   
@@ -1361,22 +1399,20 @@ async function analyzeHomeworkWithImage({ imageBase64, questionText, subject, us
   console.log('- 文本提示:', questionText || '默认提示');
   console.log('- 指定学科:', subject || '自动识别');
   
-  const prompt = questionText && questionText.trim() ? questionText.trim() : '请分析这道图片题目，输出结构化JSON（含学科、题型、难度、关键信息、分学科guidance等），不要有多余说明。';
+  const prompt = '请从以下图片中提取出完整的题目文字内容，不要解释，仅返回文字:';
   
   try {
     const body = {
       model: OCR_MODEL,
-      input: {
-        messages: [
-          {
-            role: 'user',
-            content: [
-              { image: imageBase64 },
-              { text: prompt }
-            ]
-          }
-        ]
-      }
+      messages: [
+        {
+          role: 'user',
+          content: [
+            { type: "text", text: prompt },
+            { type: "image_url", image_url: { url: imageBase64 } }
+          ]
+        }
+      ]
     };
     
     const response = await axios.post(
@@ -1394,116 +1430,29 @@ async function analyzeHomeworkWithImage({ imageBase64, questionText, subject, us
     console.log('- 完整响应:', JSON.stringify(response.data, null, 2));
     
     let content = '';
-    if (response.data.output?.choices?.[0]?.message?.content) {
-      const contentArray = response.data.output.choices[0].message.content;
+    if (response.data?.choices?.[0]?.message?.content) {
+      
+      const contentArray = response.data.choices[0].message.content;
       if (Array.isArray(contentArray)) {
         const textObj = contentArray.find(item => item.text);
         if (textObj) {
           content = textObj.text;
         }
+      } else {
+        content = contentArray;
       }
     }
     
     console.log('\n5. 提取的content:');
     console.log('- 类型:', typeof content);
     console.log('- 内容:', content);
-    
-    if (typeof content === 'string') {
-      console.log('\n6. 处理字符串content:');
-      // 移除可能的markdown代码块标记
-      const cleanContent = content.replace(/```json|```/g, '').trim();
-      console.log('- 清理后的内容:', cleanContent);
-      
-      try {
-        const parsed = JSON.parse(cleanContent);
-        console.log('\n7. JSON解析结果:');
-        console.log('- 解析成功，内容:', JSON.stringify(parsed, null, 2));
-        
-        // 修正LaTeX格式
-        const fixLatexFormat = (obj) => {
-          if (!obj || typeof obj !== 'object') return obj;
-          
-          const processed = {};
-          for (const [key, value] of Object.entries(obj)) {
-            if (typeof value === 'string') {
-              // 先将所有多余的斜杠归一为单斜杠（如 \\\\frac -> \\frac -> \frac）
-              let fixed = value.replace(/\\+/g, '\\');
-              // 将\(...\)格式转换为$...$格式
-              fixed = fixed.replace(/\\\(/g, '$').replace(/\\\)/g, '$');
-              // 检查是否包含LaTeX公式但没有数学符号包围
-              if (fixed.match(/\\frac|\\sqrt|\\sum|\\int|\\lim|\\sin|\\cos|\\tan|\\log/)) {
-                // 如果包含LaTeX公式但没有$包围，则添加$
-                if (!fixed.includes('$')) {
-                  fixed = `$${fixed}$`;
-                }
-              }
-              processed[key] = fixed;
-            } else if (Array.isArray(value)) {
-              processed[key] = value.map(item => {
-                if (typeof item === 'string') {
-                  let fixed = item.replace(/\\+/g, '\\');
-                  // 将\(...\)格式转换为$...$格式
-                  fixed = fixed.replace(/\\\(/g, '$').replace(/\\\)/g, '$');
-                  if (fixed.match(/\\frac|\\sqrt|\\sum|\\int|\\lim|\\sin|\\cos|\\tan|\\log/)) {
-                    if (!fixed.includes('$')) {
-                      fixed = `$${fixed}$`;
-                    }
-                  }
-                  return fixed;
-                }
-                return item;
-              });
-            } else if (typeof value === 'object' && value !== null) {
-              processed[key] = fixLatexFormat(value);
-            } else {
-              processed[key] = value;
-            }
-          }
-          return processed;
-        };
-        
-        // 修正LaTeX格式
-        const fixedParsed = fixLatexFormat(parsed);
-        
-        // 确保返回的数据结构与前端期望的一致
-        const result = {
-          学科: fixedParsed.学科 || '',
-          题型: fixedParsed.题型 || '',
-          难度: fixedParsed.难度 || '',
-          关键信息: fixedParsed.关键信息 || [],
-          '分学科guidance': fixedParsed['分学科guidance'] || {}
-        };
-        
-        console.log('\n8. 最终返回结果:');
-        console.log('- 处理后的数据:', JSON.stringify(result, null, 2));
-        return result;
-        
-      } catch (e) {
-        console.error('\n7. JSON解析失败:');
-        console.error('- 错误信息:', e.message);
-        console.error('- 错误堆栈:', e.stack);
-        return { 
-          学科: subject || '', 
-          题型: '', 
-          难度: '', 
-          关键信息: [], 
-          '分学科guidance': {}, 
-          raw: content 
-        };
-      }
-    } else {
-      console.log('\n6. 未知content类型:');
-      console.log('- 类型:', typeof content);
-      console.log('- 内容:', content);
-      return { 
-        学科: subject || '', 
-        题型: '', 
-        难度: '', 
-        关键信息: [], 
-        '分学科guidance': {}, 
-        raw: content 
-      };
-    }
+
+    const cleanContent = content.replace(/```json|```/g, '').trim();
+
+    const combinedQuestion = `${questionText || ''} ${cleanContent}`.trim();
+    console.log('\n🚀 组合后的题目文本，进入 analyzeHomework:', combinedQuestion);
+
+    return await analyzeHomework({ questionText: combinedQuestion, subject, user });
   } catch (err) {
     console.error('\n=== 错误处理 ===');
     console.error('1. 错误类型:', err.name);

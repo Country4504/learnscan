@@ -124,12 +124,13 @@ router.post('/homework/guidance', async (req, res) => {
 });
 
 router.post('/homework/parent-support', async (req, res) => {
-  const { questionText, subject } = req.body;
-  if (!questionText) {
+  const { questionText, subject, imageBase64  } = req.body;
+  
+  if (!questionText  && !imageBase64) {
     return res.status(400).json({ error: '题目内容不能为空' });
   }
   try {
-    const aiResult = await openai.parentSupport({ questionText, subject });
+    const aiResult = await openai.parentSupport({ questionText, subject, imageBase64 });
     res.json(aiResult);
   } catch (err) {
     res.status(500).json({ error: 'AI家长支持失败', detail: err.message });

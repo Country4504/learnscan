@@ -7,27 +7,36 @@
     </div>
   </div>
   <!-- 题目输入区 -->
-  <div class="row mb-4">
-    <div class="col-md-8 offset-md-2">
-      <div class="card shadow-sm">
-        <div class="card-body">
-          <h5 class="card-title">1. 输入你的作业题目</h5>
-          <textarea id="questionText" class="form-control mb-2" rows="3" placeholder="请粘贴或输入题目内容"></textarea>
-          <div class="input-group mb-2">
-            <label class="input-group-text" for="subject">学科</label>
-            <select id="subject" class="form-select">
-              <option value="">自动识别</option>
-              <option value="数学">数学</option>
-              <option value="语文">语文</option>
-              <option value="英语">英语</option>
-            </select>
-            <button id="analyzeBtn" class="btn btn-primary" type="button">智能分析</button>
-          </div>
-          <div id="inputError" class="text-danger small"></div>
+<div class="row mb-4">
+  <div class="col-md-8 offset-md-2">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title">1. 输入你的作业题目</h5>
+        <textarea id="questionText" class="form-control mb-2" rows="3" placeholder="请粘贴或输入题目内容"></textarea>
+
+        <!-- Новый блок для загрузки изображения -->
+        <div class="mb-2">
+          <label for="imageUpload" class="form-label">或者上传你的作业照片</label>
+          <input class="form-control" type="file" id="imageUpload" accept="image/*">
+          <div class="form-text text-muted small">别担心，我不会告诉你的铅笔盒你不会做这题 😄</div>
         </div>
+
+        <div class="input-group mb-2">
+          <label class="input-group-text" for="subject">学科</label>
+          <select id="subject" class="form-select">
+            <option value="">自动识别</option>
+            <option value="数学">数学</option>
+            <option value="语文">语文</option>
+            <option value="英语">英语</option>
+          </select>
+          <button id="analyzeBtn" class="btn btn-primary" type="button">智能分析</button>
+        </div>
+        <div id="inputError" class="text-danger small"></div>
       </div>
     </div>
   </div>
+</div>
+
   <!-- 题目分析与分学科辅导区 -->
   <div class="row mb-4" id="analysisSection" style="display:none;">
     <div class="col-md-8 offset-md-2">
@@ -100,6 +109,7 @@ window.MathJax = {
 let lastQuestion = '';
 let lastSubject = '';
 let currentStep = '';
+let lastImageBase64 = '';
 
 function renderAnalysis(data) {
   console.log('renderAnalysis 接收到的数据:', data);
@@ -197,10 +207,13 @@ function renderMathJax() {
   }
 }
 $('#analyzeBtn').on('click', function() {
+  
   const questionText = $('#questionText').val().trim();
   const subject = $('#subject').val();
-  if(!questionText) {
-    $('#inputError').text('请输入题目内容');
+  const file = $('#imageUpload')[0].files[0];
+
+  if(!questionText && !file) {
+    $('#inputError').text('请输入题目内容或上传图片');
     return;
   }
   $('#inputError').text('');
@@ -208,17 +221,34 @@ $('#analyzeBtn').on('click', function() {
   $('#analysisSection').hide();
   $('#guidanceSection').hide();
   $('#parentSection').hide();
-  $.post('/homework/analyze', { questionText, subject }, function(data) {
-    lastQuestion = questionText;
-    lastSubject = data.subject || subject;
+  
+
+  if (file) {
+    // 如果用户上传了文件，转成 base64 再发送
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const imageBase64 = e.target.result;
+      lastImageBase64 = imageBase64;
+      sendAnalyzeRequest({ questionText, subject, imageBase64 });
+    };
+    reader.readAsDataURL(file);
+  } else {
+    // 只有文本
+    lastImageBase64 = '';
+    sendAnalyzeRequest({ questionText, subject });
+  }
+});
+
+function sendAnalyzeRequest(payload) {
+  $.post('/homework/analyze', payload, function(data) {
+    lastQuestion = payload.questionText;
+    lastSubject = data.subject || payload.subject;
     currentStep = '';
     console.log('AI analyzeHomework 返回对象:', data);
     $('#analysisResult').html(renderAnalysis(data));
     $('#analysisSection').show();
     renderMathJax();
-    // 自动请求第一步思维引导
     getGuidance('题目理解');
-    // 自动请求家长支持
     getParentSupport();
   }).fail(function(xhr){
     $('#analysisResult').html('<span class="text-danger">AI分析失败：'+(xhr.responseJSON?.error||'未知错误')+'</span>');
@@ -226,13 +256,15 @@ $('#analyzeBtn').on('click', function() {
   }).always(function(){
     $('#analyzeBtn').prop('disabled', false).text('智能分析');
   });
-});
+}
+
 function getGuidance(step) {
   $('#guidanceResult').html('<span class="text-secondary">正在生成个性化引导...</span>');
   $('#guidanceSection').show();
   $.post('/homework/guidance', { 
     questionText: lastQuestion, 
-    currentStep: step 
+    currentStep: step,
+    imageBase64: lastImageBase64 
   }, function(data) {
     console.log('【guidance回调】AI guidance 返回对象:', data);
     currentStep = data.nextStep || '';
@@ -253,7 +285,7 @@ $('#nextGuidanceBtn').on('click', function(){
 function getParentSupport() {
   $('#parentSupportResult').html('<span class="text-secondary">AI家长支持加载中...</span>');
   $('#parentSection').show();
-  $.post('/homework/parent-support', { questionText: lastQuestion, subject: lastSubject }, function(data) {
+  $.post('/homework/parent-support', { questionText: lastQuestion, subject: lastSubject, imageBase64: lastImageBase64 }, function(data) {
     $('#parentSupportResult').html(renderParentSupport(data));
     renderMathJax();
   }).fail(function(xhr){
