@@ -13,11 +13,6 @@
         <div class="card-body">
           <h5 class="card-title">1. 输入你的作业题目</h5>
           <textarea id="questionText" class="form-control mb-2" rows="3" placeholder="请粘贴或输入题目内容"></textarea>
-          <div class="mb-2">
-            <input type="file" id="imgInput" accept="image/*" capture="environment" style="display:inline-block; width:auto;">
-            <img id="imgPreview" src="" style="max-width:120px;max-height:80px;display:none;margin-left:10px;vertical-align:middle;"/>
-            <span id="ocrStatus" class="text-info small ms-2"></span>
-          </div>
           <div class="input-group mb-2">
             <label class="input-group-text" for="subject">学科</label>
             <select id="subject" class="form-select">
@@ -105,7 +100,6 @@ window.MathJax = {
 let lastQuestion = '';
 let lastSubject = '';
 let currentStep = '';
-let ocrImageBase64 = '';
 
 function renderAnalysis(data) {
   console.log('renderAnalysis 接收到的数据:', data);
@@ -205,9 +199,8 @@ function renderMathJax() {
 $('#analyzeBtn').on('click', function() {
   const questionText = $('#questionText').val().trim();
   const subject = $('#subject').val();
-  const imageBase64 = ocrImageBase64 || '';
-  if(!questionText && !imageBase64) {
-    $('#inputError').text('请输入题目内容或上传图片');
+  if(!questionText) {
+    $('#inputError').text('请输入题目内容');
     return;
   }
   $('#inputError').text('');
@@ -215,8 +208,8 @@ $('#analyzeBtn').on('click', function() {
   $('#analysisSection').hide();
   $('#guidanceSection').hide();
   $('#parentSection').hide();
-  $.post('/homework/analyze', { questionText, subject, imageBase64 }, function(data) {
-    lastQuestion = questionText || '[图片题目]';
+  $.post('/homework/analyze', { questionText, subject }, function(data) {
+    lastQuestion = questionText;
     lastSubject = data.subject || subject;
     currentStep = '';
     console.log('AI analyzeHomework 返回对象:', data);
@@ -239,8 +232,7 @@ function getGuidance(step) {
   $('#guidanceSection').show();
   $.post('/homework/guidance', { 
     questionText: lastQuestion, 
-    currentStep: step,
-    imageBase64: ocrImageBase64 
+    currentStep: step 
   }, function(data) {
     console.log('【guidance回调】AI guidance 返回对象:', data);
     currentStep = data.nextStep || '';
@@ -268,19 +260,4 @@ function getParentSupport() {
     $('#parentSupportResult').html('<span class="text-danger">AI家长支持失败：'+(xhr.responseJSON?.error||'未知错误')+'</span>');
   });
 }
-// 图片上传与AI OCR识别
-$('#imgInput').on('change', function(e){
-  const file = e.target.files[0];
-  if(file){
-    const reader = new FileReader();
-    reader.onload = function(ev){
-      ocrImageBase64 = ev.target.result;
-      $('#imgPreview').attr('src', ocrImageBase64).show();
-      $('#ocrStatus').text('');
-    };
-    reader.readAsDataURL(file);
-  }
-});
-$('#ocrBtn').hide();
-$('#ocrStatus').hide();
 </script> 
