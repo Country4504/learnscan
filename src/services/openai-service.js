@@ -3,6 +3,7 @@
  * 用于根据学习测评结果生成家长建议
  */
 const axios = require('axios');
+const fixLatexFormat = require('../utils/fixLatexFormat')
 
 // 环境配置
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
@@ -821,58 +822,6 @@ ${exampleJson}
   try {
     const parsed = JSON.parse(content.replace(/```json|```/g, ''));
     console.log('analyzeHomework AI返回JSON:', parsed);
-    
-    // 修复LaTeX格式的函数
-    const fixLatexFormat = (obj) => {
-      if (!obj || typeof obj !== 'object') return obj;
-      
-      const processed = {};
-      for (const [key, value] of Object.entries(obj)) {
-        if (typeof value === 'string') {
-          // 先将所有多余的斜杠归一为单斜杠（如 \\\\frac -> \\frac -> \frac）
-          let fixed = value.replace(/\\+/g, '\\');
-          // 将\(...\)格式转换为$...$格式
-          fixed = fixed.replace(/\\\(/g, '$').replace(/\\\)/g, '$');
-          // 检查是否包含LaTeX公式但没有数学符号包围
-          if (fixed.match(/\\frac|\\sqrt|\\sum|\\int|\\lim|\\sin|\\cos|\\tan|\\log/)) {
-            // 如果包含LaTeX公式但没有$包围，则添加$
-            if (!fixed.includes('$')) {
-              fixed = `$${fixed}$`;
-            }
-          }
-          const original = value;
-          processed[key] = fixed;
-          if (original !== processed[key]) {
-            console.log(`LaTeX修复 - ${key}: "${original}" -> "${processed[key]}"`);
-          }
-        } else if (Array.isArray(value)) {
-          processed[key] = value.map(item => {
-            if (typeof item === 'string') {
-              const original = item;
-              let fixed = item.replace(/\\+/g, '\\');
-              // 将\(...\)格式转换为$...$格式
-              fixed = fixed.replace(/\\\(/g, '$').replace(/\\\)/g, '$');
-              if (fixed.match(/\\frac|\\sqrt|\\sum|\\int|\\lim|\\sin|\\cos|\\tan|\\log/)) {
-                if (!fixed.includes('$')) {
-                  fixed = `$${fixed}$`;
-                }
-              }
-              if (original !== fixed) {
-                console.log(`LaTeX修复 - 数组项: "${original}" -> "${fixed}"`);
-              }
-              return fixed;
-            }
-            return item;
-          });
-        } else if (typeof value === 'object' && value !== null) {
-          processed[key] = fixLatexFormat(value);
-        } else {
-          processed[key] = value;
-        }
-      }
-      return processed;
-    };
-    
     // 修复LaTeX格式
     const fixedParsed = fixLatexFormat(parsed);
     console.log('LaTeX修复后的数据:', JSON.stringify(fixedParsed, null, 2));
@@ -887,6 +836,7 @@ ${exampleJson}
     };
     
     console.log('最终返回给前端的数据:', JSON.stringify(result, null, 2));
+    
     return result;
   } catch (e) {
     return { 
@@ -1377,6 +1327,111 @@ async function analyzeHomeworkWithImage({ imageBase64, questionText, subject, us
   const OCR_API_ENDPOINT = process.env.OCR_API_ENDPOINT || 'https://dashscope.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation';
   const OCR_MODEL = process.env.OCR_MODEL || 'qwen-vl-max';
   
+
+    const subjectTemplates = {
+    '数学': `json{
+  "subject": "数学",
+  "type": "题目类型",
+  "difficulty": "难度等级",
+  "keyInfo": ["关键信息1", "关键信息2"],
+  "guidance": {
+    "概念回顾": "相关数学概念和公式说明",
+    "解题思路引导": "分步骤引导学生思考解题方法",
+    "计算验证": "帮助验证计算结果的正确性",
+    "错误诊断": "常见错误类型分析及纠正建议",
+    "类题练习": ["类题1", "类题2"]
+  }
+}`,
+    '语文': `json{
+  "subject": "语文",
+  "type": "题目类型",
+  "difficulty": "难度等级",
+  "keyInfo": ["关键信息1", "关键信息2"],
+  "guidance": {
+    "阅读理解指导": "文本分析方法和答题技巧",
+    "写作思路启发": "作文框架和内容要点",
+    "文言文解析": "字词解释和句式分析",
+    "诗词鉴赏": "诗词意境和表达技巧",
+    "语法纠错": "语法错误识别与纠正"
+  }
+}`,
+    '英语': `json{
+  "subject": "英语",
+  "type": "题目类型",
+  "difficulty": "难度等级",
+  "keyInfo": ["关键信息1", "关键信息2"],
+  "guidance": {
+    "词汇释义": "单词含义和用法解释",
+    "语法分析": "句子结构和语法要点分析",
+    "翻译指导": "翻译思路和表达建议",
+    "写作辅助": "作文构思和表达建议",
+    "发音指导": "单词和句子的发音指导"
+  }
+}`,
+    '理科': `json{
+  "subject": "理科",
+  "type": "题目类型",
+  "difficulty": "难度等级",
+  "keyInfo": ["关键信息1", "关键信息2"],
+  "guidance": {
+    "概念理解": "物理/化学/生物等概念说明",
+    "实验分析": "实验题分析和解答指导",
+    "公式应用": "相关公式选择与应用",
+    "图表解读": "科学图表理解与分析",
+    "计算指导": "理科计算题的解题步骤"
+  }
+}`
+  };
+
+  // 示例JSON
+  const exampleJson = `{
+  "subject": "数学",
+  "type": "应用题",
+  "difficulty": "中等",
+  "keyInfo": ["已知条件1", "已知条件2"],
+  "guidance": {
+    "概念回顾": "相关数学概念和公式说明",
+    "解题思路引导": "分步骤引导学生思考解题方法",
+    "计算验证": "帮助验证计算结果的正确性",
+    "错误诊断": "常见错误类型分析及纠正建议",
+    "类题练习": ["类题1", "类题2"]
+  }
+}`;
+
+  // 构造参数
+  const question_type = '应用题'; // 可以根据实际逻辑判断
+  const difficulty = '中等';      // 可以根据实际逻辑判断
+  const student_question = questionText;
+  const subject_template = subjectTemplates[subject] || subjectTemplates['数学'];
+
+  // 直接使用prompt.txt的内容，替换模板变量
+  const prompt = `你是一个专业的学科辅导助手。请严格按照以下要求输出JSON格式的学习指导内容。
+
+**重要提醒：**
+1. 必须严格按照JSON格式输出，不要添加任何解释文字
+2. 确保JSON语法正确，所有字符串用双引号包围
+3. 数组元素用方括号，对象用花括号
+4. 不要在JSON前后添加markdown代码块标记
+5. 输出内容必须是完整有效的JSON
+6. 如果包含数学公式，请用以$包围的LaTeX格式输出，例如：$f(x) = \frac{a}{b}$、$\lambda$
+
+**输入信息：**
+- 学科：${subject || '数学'}
+- 题目类型：${question_type} 
+- 难度：${difficulty}
+- 学生问题：${student_question}
+
+**输出要求：**
+根据学科类型，严格按照对应的JSON结构输出：
+
+${subject_template}
+
+**输出格式示例：**
+${exampleJson}
+
+现在请根据以上要求，为学生的问题生成JSON格式的学习指导：`;
+
+
   console.log('\n=== 开始多模态分析 ===');
   console.log('1. 配置信息:');
   console.log('- API端点:', OCR_API_ENDPOINT);
@@ -1398,8 +1453,6 @@ async function analyzeHomeworkWithImage({ imageBase64, questionText, subject, us
   console.log('- 图片base64前缀:', imageBase64.substring(0, 50) + '...');
   console.log('- 文本提示:', questionText || '默认提示');
   console.log('- 指定学科:', subject || '自动识别');
-  
-  const prompt = '请从以下图片中提取出完整的题目文字内容，不要解释，仅返回文字:';
   
   try {
     const body = {
@@ -1429,30 +1482,29 @@ async function analyzeHomeworkWithImage({ imageBase64, questionText, subject, us
     console.log('\n4. AI原始返回:');
     console.log('- 完整响应:', JSON.stringify(response.data, null, 2));
     
-    let content = '';
-    if (response.data?.choices?.[0]?.message?.content) {
-      
-      const contentArray = response.data.choices[0].message.content;
-      if (Array.isArray(contentArray)) {
-        const textObj = contentArray.find(item => item.text);
-        if (textObj) {
-          content = textObj.text;
-        }
-      } else {
-        content = contentArray;
-      }
-    }
-    
+    let content = response.data?.choices?.[0]?.message?.content;
     console.log('\n5. 提取的content:');
     console.log('- 类型:', typeof content);
     console.log('- 内容:', content);
 
-    const cleanContent = content.replace(/```json|```/g, '').trim();
+    const parsed = JSON.parse(content.replace(/```json|```/g, '').trim());
 
-    const combinedQuestion = `${questionText || ''} ${cleanContent}`.trim();
-    console.log('\n🚀 组合后的题目文本，进入 analyzeHomework:', combinedQuestion);
+    console.log('\n🚀 组合后的题目文本，进入 analyzeHomework:', parsed);
 
-    return await analyzeHomework({ questionText: combinedQuestion, subject, user });
+    const fixedParsed = fixLatexFormat(parsed);
+    const result = {
+      学科: fixedParsed.subject || fixedParsed.学科 || subject || '',
+      题型: fixedParsed.type || fixedParsed.题型 || '',
+      难度: fixedParsed.difficulty || fixedParsed.难度 || '',
+      关键信息: fixedParsed.keyInfo || fixedParsed.关键信息 || [],
+      '分学科guidance': fixedParsed.guidance || fixedParsed['分学科guidance'] || {}
+    };
+
+        console.log('最终返回给前端的数据:', JSON.stringify(result, null, 2));
+
+
+
+    return result
   } catch (err) {
     console.error('\n=== 错误处理 ===');
     console.error('1. 错误类型:', err.name);
